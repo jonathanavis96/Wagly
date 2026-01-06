@@ -1,17 +1,17 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Home from './pages/Home.tsx';
-import BringWaglyHome from './pages/BringWaglyHome.tsx';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Home from './pages/Home';
+import BringWaglyHome from './pages/BringWaglyHome';
 import './index.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <Router>
+    <BrowserRouter basename="/Wagly">
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/bring-wagly-home" element={<BringWaglyHome />} />
       </Routes>
-    </Router>
+    </BrowserRouter>
   </StrictMode>
 );
