@@ -2,6 +2,30 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+
+    <!-- GH Pages SPA deep-link support (keeps clean URLs on refresh) -->
+    <script>
+      (function () {
+        var l = window.location;
+
+        // When redirected from 404.html, the URL looks like:
+        // /Wagly/?/bring-wagly-home
+        if (l.search && l.search.startsWith("?/")) {
+          var decoded = l.search.slice(2); // remove "?/"
+
+          // If extra query params were appended after the path, split at '&'
+          var ampIndex = decoded.indexOf("&");
+          var pathOnly = ampIndex === -1 ? decoded : decoded.slice(0, ampIndex);
+          var extraQuery = ampIndex === -1 ? "" : decoded.slice(ampIndex + 1);
+
+          var basePath = l.pathname.replace(/\/$/, ""); // remove trailing slash
+          var newUrl = basePath + "/" + pathOnly + (extraQuery ? "?" + extraQuery : "") + l.hash;
+
+          window.history.replaceState(null, "", newUrl);
+        }
+      })();
+    </script>
+
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
