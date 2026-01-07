@@ -431,7 +431,23 @@ export default function BringWaglyHome() {
           {/* LEFT */}
           <div>
             {/* Stock + countdown */}
-            <div className="bg-white rounded-2xl p-6 shadow-lg mb-6">
+            <style>{`
+  @keyframes waglyStockFlash {
+    0%, 100% {
+      background-color: #ffffff;
+      box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    }
+    50% {
+      background-color: #fee2e2; /* light red */
+      box-shadow: 0 0 0 10px rgba(239, 68, 68, 0.18); /* red glow */
+    }
+  }
+`}</style>
+
+            <div
+              className={`bg-white rounded-2xl p-6 shadow-lg mb-6 border-2 transition ${
+                flashStock ? 'border-red-600 animate-[waglyStockFlash_0.9s_ease-in-out_infinite]' : 'border-transparent'
+              }`}>
               <div className="flex items-center justify-between mb-2">
                 <div className="text-sm font-semibold text-gray-900">
                   Only <span className={flashStock ? 'text-red-600 animate-pulse' : 'text-red-600'}>{stock}</span> items
