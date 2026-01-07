@@ -1,7 +1,6 @@
 // BringWaglyHome.tsx
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Check, Clock, CreditCard, Headphones, Shield, Tag, Users } from 'lucide-react';
+import { Clock, CreditCard, Headphones, Shield, Tag, Users } from 'lucide-react';
 
 type BundleKey = '1' | '2' | '3' | '4';
 
@@ -20,6 +19,12 @@ type PupOption = {
   id: string;
   name: string;
   src: string;
+};
+
+type CountryOption = {
+  name: string;
+  flag: string;
+  code: string;
 };
 
 const bundles: Record<BundleKey, Bundle> = {
@@ -41,51 +46,68 @@ const FORMSPREE_ENDPOINT = 'https://formspree.io/f/mvzgeowa';
 // Vite + GH Pages safe paths (BASE_URL typically ends with "/")
 const PUP_IMAGE_SRC = `${import.meta.env.BASE_URL}wagly-pup.png`;
 
-const countries = [
-  { name: 'United States', flag: '🇺🇸' },
-  { name: 'Canada', flag: '🇨🇦' },
-  { name: 'United Kingdom', flag: '🇬🇧' },
-  { name: 'Australia', flag: '🇦🇺' },
-  { name: 'Germany', flag: '🇩🇪' },
-  { name: 'France', flag: '🇫🇷' },
-  { name: 'Spain', flag: '🇪🇸' },
-  { name: 'Italy', flag: '🇮🇹' },
-  { name: 'Netherlands', flag: '🇳🇱' },
-  { name: 'Sweden', flag: '🇸🇪' },
-  { name: 'Norway', flag: '🇳🇴' },
-  { name: 'Denmark', flag: '🇩🇰' },
-  { name: 'Ireland', flag: '🇮🇪' },
-  { name: 'New Zealand', flag: '🇳🇿' },
-  { name: 'South Africa', flag: '🇿🇦' },
-  { name: 'Mexico', flag: '🇲🇽' },
-  { name: 'Brazil', flag: '🇧🇷' },
-  { name: 'Japan', flag: '🇯🇵' },
-  { name: 'South Korea', flag: '🇰🇷' },
-  { name: 'Singapore', flag: '🇸🇬' },
-  { name: 'Switzerland', flag: '🇨🇭' },
-  { name: 'Belgium', flag: '🇧🇪' },
-  { name: 'Austria', flag: '🇦🇹' },
-  { name: 'Portugal', flag: '🇵🇹' },
-  { name: 'Finland', flag: '🇫🇮' },
-  { name: 'Poland', flag: '🇵🇱' },
-  { name: 'Israel', flag: '🇮🇱' },
-  { name: 'United Arab Emirates', flag: '🇦🇪' }
+// GitHub Pages “home” should be BASE_URL (e.g. "/Wagly/"), not "/"
+const HOME_PATH = (() => {
+  const base = import.meta.env.BASE_URL || '/';
+  if (!base.startsWith('/')) return `/${base.endsWith('/') ? base : `${base}/`}`;
+  return base.endsWith('/') ? base : `${base}/`;
+})();
+
+// Stock behavior constants
+const STOCK_MAX = 200; // for bar percentage + “start 50–60%”
+const STOCK_MIN = 5;
+const STOCK_TARGET_TIME_LEFT = 60; // at ~1 minute remaining, stock should be 5 and flashing
+
+const countries: CountryOption[] = [
+  { name: 'United States', flag: '🇺🇸', code: 'US' },
+  { name: 'Canada', flag: '🇨🇦', code: 'CA' },
+  { name: 'United Kingdom', flag: '🇬🇧', code: 'GB' },
+  { name: 'Australia', flag: '🇦🇺', code: 'AU' },
+  { name: 'Germany', flag: '🇩🇪', code: 'DE' },
+  { name: 'France', flag: '🇫🇷', code: 'FR' },
+  { name: 'Spain', flag: '🇪🇸', code: 'ES' },
+  { name: 'Italy', flag: '🇮🇹', code: 'IT' },
+  { name: 'Netherlands', flag: '🇳🇱', code: 'NL' },
+  { name: 'Sweden', flag: '🇸🇪', code: 'SE' },
+  { name: 'Norway', flag: '🇳🇴', code: 'NO' },
+  { name: 'Denmark', flag: '🇩🇰', code: 'DK' },
+  { name: 'Ireland', flag: '🇮🇪', code: 'IE' },
+  { name: 'New Zealand', flag: '🇳🇿', code: 'NZ' },
+  { name: 'South Africa', flag: '🇿🇦', code: 'ZA' },
+  { name: 'Mexico', flag: '🇲🇽', code: 'MX' },
+  { name: 'Brazil', flag: '🇧🇷', code: 'BR' },
+  { name: 'Japan', flag: '🇯🇵', code: 'JP' },
+  { name: 'South Korea', flag: '🇰🇷', code: 'KR' },
+  { name: 'Singapore', flag: '🇸🇬', code: 'SG' },
+  { name: 'Switzerland', flag: '🇨🇭', code: 'CH' },
+  { name: 'Belgium', flag: '🇧🇪', code: 'BE' },
+  { name: 'Austria', flag: '🇦🇹', code: 'AT' },
+  { name: 'Portugal', flag: '🇵🇹', code: 'PT' },
+  { name: 'Finland', flag: '🇫🇮', code: 'FI' },
+  { name: 'Poland', flag: '🇵🇱', code: 'PL' },
+  { name: 'Israel', flag: '🇮🇱', code: 'IL' },
+  { name: 'United Arab Emirates', flag: '🇦🇪', code: 'AE' }
 ].sort((a, b) => a.name.localeCompare(b.name));
 
 function money(n: number) {
   return n.toFixed(2);
 }
+
+function randInt(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function clamp(n: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, n));
+}
+
 function PriceEach({ price }: { price: string }) {
   const [dollars, cents = '00'] = price.split('.');
   return (
-    /* pt-1 provides the buffer to prevent top clipping on desktop */
     <div className="inline-flex items-start leading-tight shrink-0 pt-1">
-      {/* Dollars: Responsive font sizing with tracking for a premium feel */}
       <span className="text-[24px] sm:text-[32px] font-extrabold text-gray-900 tracking-tight leading-none">
         ${dollars}
       </span>
-
-      {/* Cents and "each" vertical stack */}
       <span className="ml-0.5 sm:ml-1 flex flex-col items-start justify-start">
         <span className="text-[12px] sm:text-[16px] font-extrabold text-gray-900 leading-none">{cents}</span>
         <span className="text-[9px] sm:text-[11px] font-bold text-gray-500 uppercase tracking-tighter mt-0.5 leading-none">
@@ -96,6 +118,27 @@ function PriceEach({ price }: { price: string }) {
   );
 }
 
+/** Simple, black, same-size “logos” as shield (w-6 h-6). No external assets required. */
+// Apple + Google icons only (used in Payment Methods)
+function AppleIcon() {
+  // Simple Icons style Apple mark (black)
+  return (
+    <svg viewBox="0 0 24 24" className="w-6 h-6" fill="currentColor" aria-hidden="true">
+      <path d="M16.365 1.43c0 1.14-.46 2.213-1.266 3.048-.822.85-2.158 1.503-3.33 1.412-.15-1.128.414-2.35 1.19-3.2.86-.95 2.365-1.64 3.406-1.26z" />
+      <path d="M20.88 17.098c-.646 1.49-.956 2.158-1.79 3.47-1.16 1.82-2.8 4.09-4.83 4.11-1.8.02-2.26-1.16-4.71-1.14-2.45.02-2.96 1.16-4.76 1.14-2.03-.02-3.58-2.05-4.74-3.87C.76 18.72-.4 13.45 2.12 9.56c1.41-2.18 3.64-3.45 5.74-3.45 1.84 0 3 1.2 4.52 1.2 1.48 0 2.38-1.21 4.5-1.21 1.88 0 3.87 1.03 5.27 2.8-4.62 2.54-3.88 8.96-.27 8.2z" />
+    </svg>
+  );
+}
+
+function GooglePayIcon() {
+  // Simple Icons style Google "G" mark (black)
+  return (
+    <svg viewBox="0 0 24 24" className="w-6 h-6" fill="currentColor" aria-hidden="true">
+      <path d="M12.24 10.285v3.432h5.665c-.228 1.23-1.412 3.61-5.665 3.61-3.41 0-6.195-2.82-6.195-6.327 0-3.506 2.785-6.327 6.195-6.327 1.94 0 3.24.82 3.985 1.532l2.71-2.61C17.3 1.72 15.04.75 12.24.75 6.97.75 2.75 4.97 2.75 10.99c0 6.02 4.22 10.24 9.49 10.24 5.49 0 9.12-3.86 9.12-9.29 0-.62-.07-1.09-.15-1.56z" />
+    </svg>
+  );
+}
+
 export default function BringWaglyHome() {
   const [selectedBundle, setSelectedBundle] = useState<BundleKey>('3');
 
@@ -103,15 +146,15 @@ export default function BringWaglyHome() {
   const [timeLeft, setTimeLeft] = useState(600);
 
   // stock
-  const [stock, setStock] = useState(0);
-  const [stockColor, setStockColor] = useState('bg-yellow-500');
-  const [flashStock, setFlashStock] = useState(false);
+  const [stock, setStock] = useState<number>(0);
+  const [stockColor, setStockColor] = useState<string>('bg-green-600');
+  const [flashStock, setFlashStock] = useState<boolean>(false);
 
   // form fields
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [country, setCountry] = useState('US');
+  const [country, setCountry] = useState<string>('United States'); // store country NAME (reverted to old method)
   const [address1, setAddress1] = useState('');
   const [address2, setAddress2] = useState('');
   const [city, setCity] = useState('');
@@ -123,7 +166,6 @@ export default function BringWaglyHome() {
       { id: 'teddy', name: 'Teddy', src: `${import.meta.env.BASE_URL}pups/pup1.png` },
       { id: 'buddy', name: 'Buddy', src: `${import.meta.env.BASE_URL}pups/pup2.png` },
       { id: 'snowy', name: 'Snowy', src: `${import.meta.env.BASE_URL}pups/pup3.png` },
-      // Coco renamed to Milo, original Milo removed to keep 6 grid
       { id: 'milo', name: 'Milo', src: `${import.meta.env.BASE_URL}pups/pup4.png` },
       { id: 'peanut', name: 'Peanut', src: `${import.meta.env.BASE_URL}pups/pup5.png` },
       { id: 'daisy', name: 'Daisy', src: `${import.meta.env.BASE_URL}pups/pup6.png` }
@@ -141,13 +183,36 @@ export default function BringWaglyHome() {
     setSelectedPups((prev) => (prev.length > currentBundle.qty ? prev.slice(prev.length - currentBundle.qty) : prev));
   }, [currentBundle.qty]);
 
-  // initial stock: starts mid range (orange/yellow)
+  // initial stock: starts around 50–60% of total (green)
   useEffect(() => {
-    const initial = Math.floor(Math.random() * (170 - 110 + 1)) + 110; // 110..170
+    const initial = randInt(Math.floor(STOCK_MAX * 0.5), Math.floor(STOCK_MAX * 0.6));
     setStock(initial);
   }, []);
 
-  // countdown timer
+  // country via IP (fallback to USA)
+  useEffect(() => {
+    let cancelled = false;
+
+    async function detectCountry() {
+      try {
+        const res = await fetch('https://ipapi.co/json/');
+        if (!res.ok) return;
+        const data = (await res.json()) as { country_code?: string };
+        const code = (data.country_code || '').toUpperCase();
+        const match = countries.find((c) => c.code === code);
+        if (!cancelled && match) setCountry(match.name);
+      } catch {
+        // ignore (fallback remains United States)
+      }
+    }
+
+    detectCountry();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // discount countdown timer
   useEffect(() => {
     const t = window.setInterval(() => {
       setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
@@ -155,54 +220,118 @@ export default function BringWaglyHome() {
     return () => window.clearInterval(t);
   }, []);
 
-  // stock countdown timeout handle
-  const nextDropRef = useRef<number | null>(null);
+  // ---- Stock countdown (self-scheduling timeout loop, does not get cancelled every second) ----
+  const timeLeftRef = useRef<number>(timeLeft);
+  const stockRef = useRef<number>(stock);
+  const stockTimerRef = useRef<number | null>(null);
 
-  // stock countdown: random 5-12 seconds, drop 1-4, never below 5, aims to hit ~5 around 0:35 left
   useEffect(() => {
-    if (timeLeft <= 0) return;
-    if (stock <= 5) return;
+    timeLeftRef.current = timeLeft;
+  }, [timeLeft]);
 
-    if (nextDropRef.current === null) {
-      nextDropRef.current = window.setTimeout(() => {
-        setStock((prev) => {
-          if (prev <= 5) return 5;
+  useEffect(() => {
+    stockRef.current = stock;
+  }, [stock]);
 
-          const secondsTarget = 35;
-          const remainingSeconds = timeLeft;
+  const computeNextDropDelayMs = (curStock: number, curTimeLeft: number) => {
+    if (curTimeLeft <= STOCK_TARGET_TIME_LEFT) return null;
+    if (curStock <= STOCK_MIN) return null;
 
-          const remainingDropsNeeded = Math.max(prev - 5, 0);
-          const secondsLeftToTarget = Math.max(remainingSeconds - secondsTarget, 1);
+    const timeWindow = Math.max(curTimeLeft - STOCK_TARGET_TIME_LEFT, 1);
+    const remainingUnits = Math.max(curStock - STOCK_MIN, 0);
+    const avgDrop = 2.5; // average of 1..4
+    const dropsNeeded = Math.max(1, Math.ceil(remainingUnits / avgDrop));
 
-          const urgency = remainingDropsNeeded / secondsLeftToTarget;
+    const baseIntervalSec = timeWindow / dropsNeeded;
+    const intervalSec = clamp(baseIntervalSec, 4, 12);
+    const jitter = 0.7 + Math.random() * 0.6; // 0.7..1.3
+    return Math.floor(intervalSec * jitter * 1000);
+  };
 
-          const maxStep = urgency > 0.12 ? 4 : urgency > 0.08 ? 3 : urgency > 0.05 ? 2 : 1;
-          const step = Math.floor(Math.random() * maxStep) + 1;
+  useEffect(() => {
+    if (stock <= 0) return;
 
-          return Math.max(prev - step, 5);
-        });
+    const scheduleNext = () => {
+      const tl = timeLeftRef.current;
+      const st = stockRef.current;
 
-        nextDropRef.current = null;
-      }, Math.floor(Math.random() * (12000 - 5000 + 1)) + 5000);
-    }
+      if (tl <= STOCK_TARGET_TIME_LEFT) {
+        stockRef.current = STOCK_MIN;
+        setStock(STOCK_MIN);
+        setFlashStock(true);
+        setStockColor('bg-red-600');
+        return;
+      }
+
+      if (st <= STOCK_MIN) {
+        stockRef.current = STOCK_MIN;
+        setStock(STOCK_MIN);
+        setFlashStock(true);
+        setStockColor('bg-red-600');
+        return;
+      }
+
+      const delay = computeNextDropDelayMs(st, tl);
+      if (delay === null) return;
+
+      stockTimerRef.current = window.setTimeout(() => {
+        const nowTimeLeft = timeLeftRef.current;
+        const nowStock = stockRef.current;
+
+        if (nowTimeLeft <= STOCK_TARGET_TIME_LEFT) {
+          stockRef.current = STOCK_MIN;
+          setStock(STOCK_MIN);
+          setFlashStock(true);
+          setStockColor('bg-red-600');
+          return;
+        }
+
+        if (nowStock <= STOCK_MIN) {
+          stockRef.current = STOCK_MIN;
+          setStock(STOCK_MIN);
+          setFlashStock(true);
+          setStockColor('bg-red-600');
+          return;
+        }
+
+        const step = randInt(1, 4);
+        const next = Math.max(nowStock - step, STOCK_MIN);
+
+        stockRef.current = next;
+        setStock(next);
+
+        scheduleNext();
+      }, delay);
+    };
+
+    scheduleNext();
 
     return () => {
-      if (nextDropRef.current !== null) {
-        window.clearTimeout(nextDropRef.current);
-        nextDropRef.current = null;
+      if (stockTimerRef.current !== null) {
+        window.clearTimeout(stockTimerRef.current);
+        stockTimerRef.current = null;
       }
     };
-  }, [stock, timeLeft]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stock > 0]);
 
+  // Stock bar color + flashing
   useEffect(() => {
-    const maxStock = 210;
-    const pct = stock / maxStock;
+    const pct = stock / STOCK_MAX;
 
-    if (pct > 0.55) setStockColor('bg-yellow-500');
-    else if (pct > 0.25) setStockColor('bg-orange-500');
+    if (stock <= STOCK_MIN) {
+      setStockColor('bg-red-600');
+      setFlashStock(true);
+      return;
+    }
+
+    setFlashStock(false);
+
+    // green -> yellow -> orange -> red
+    if (pct > 0.45) setStockColor('bg-green-600');
+    else if (pct > 0.3) setStockColor('bg-yellow-500');
+    else if (pct > 0.18) setStockColor('bg-orange-500');
     else setStockColor('bg-red-600');
-
-    setFlashStock(stock <= 5);
   }, [stock]);
 
   const formatTime = (seconds: number) => {
@@ -223,7 +352,6 @@ export default function BringWaglyHome() {
     setSelectedPups((prev) => {
       if (currentBundle.qty <= 0) return prev;
 
-      // space available: append
       if (prev.length < currentBundle.qty) {
         const next = [...prev, p];
         setJustFilledSlotIndex(next.length - 1);
@@ -231,7 +359,6 @@ export default function BringWaglyHome() {
         return next;
       }
 
-      // full: FIFO swap
       const next = [...prev.slice(1), p];
       setJustFilledSlotIndex(next.length - 1);
       window.setTimeout(() => setJustFilledSlotIndex(null), 450);
@@ -256,7 +383,7 @@ export default function BringWaglyHome() {
         fullName,
         email,
         phone,
-        country,
+        country, // name
         address1,
         address2,
         city,
@@ -288,23 +415,22 @@ export default function BringWaglyHome() {
     <div className="min-h-screen bg-[#F9F6F0]">
       <header className="sticky top-0 z-50 bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link to="/" className="text-2xl font-serif font-bold text-gray-800 hover:text-[#8A9A5B] transition">
+          <a href={HOME_PATH} className="text-2xl font-serif font-bold text-gray-800 hover:text-[#8A9A5B] transition">
             Wagly
-          </Link>
-          <Link to="/" className="text-gray-600 hover:text-[#8A9A5B] transition">
+          </a>
+          <a href={HOME_PATH} className="text-gray-600 hover:text-[#8A9A5B] transition">
             Back to Home
-          </Link>
+          </a>
         </div>
       </header>
 
       <div className="max-w-6xl mx-auto px-4 py-10 overflow-x-hidden">
         <h1 className="text-3xl md:text-4xl font-serif font-bold text-gray-900 text-center mb-10">{headline}</h1>
 
-        {/* lg:grid-cols-2 restores the 50/50 split on desktop, flex-col handles mobile */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-          {/* LEFT: bundle tiles + form */}
+          {/* LEFT */}
           <div>
-            {/* Top-left stock + countdown */}
+            {/* Stock + countdown */}
             <div className="bg-white rounded-2xl p-6 shadow-lg mb-6">
               <div className="flex items-center justify-between mb-2">
                 <div className="text-sm font-semibold text-gray-900">
@@ -319,7 +445,7 @@ export default function BringWaglyHome() {
                   className={`h-2 rounded-full transition-all duration-300 ${stockColor} ${
                     flashStock ? 'animate-pulse' : ''
                   }`}
-                  style={{ width: `${Math.min((stock / 210) * 100, 100)}%` }}
+                  style={{ width: `${Math.min((stock / STOCK_MAX) * 100, 100)}%` }}
                 />
               </div>
 
@@ -338,7 +464,7 @@ export default function BringWaglyHome() {
               <div className="space-y-4">
                 {Object.entries(bundles).map(([key, bundle]) => {
                   const active = selectedBundle === key;
-                  const showChooser = active; // show chooser on selected tile (including 1x)
+                  const showChooser = active;
 
                   return (
                     <div
@@ -349,7 +475,6 @@ export default function BringWaglyHome() {
                           ? 'border-[#8A9A5B] bg-[#FBFAF6] shadow-lg ring-1 ring-[#8A9A5B]'
                           : 'border-gray-200 bg-white hover:border-[#8A9A5B]'
                       }`}>
-                      {/* Promo badge: Locked to top row to prevent overlapping the expanded content */}
                       <div className="absolute left-1/2 top-[32px] sm:top-[42px] -translate-x-1/2 -translate-y-1/2 pointer-events-none z-10">
                         <div className="flex items-center gap-1 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full border border-[#C8E6C9] bg-[#E8F5E9] whitespace-nowrap shadow-sm">
                           <Tag className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#2E7D32]" />
@@ -361,11 +486,10 @@ export default function BringWaglyHome() {
 
                       <div className="p-4 sm:p-5">
                         <div className="flex items-center justify-between relative">
-                          {/* Left Side: Dog + Name */}
                           <div className="flex items-center gap-2 sm:gap-5">
                             <div className="shrink-0">
                               <img
-                                src={`${import.meta.env.BASE_URL}wagly-pup.png`}
+                                src={PUP_IMAGE_SRC}
                                 alt="Wagly Pup"
                                 className="w-10 h-10 sm:w-16 sm:h-16 object-contain"
                               />
@@ -378,14 +502,12 @@ export default function BringWaglyHome() {
                             </div>
                           </div>
 
-                          {/* Right Side: Price Section */}
                           <div className="shrink-0 text-right flex flex-col items-end">
                             <div className="text-[10px] sm:text-sm text-gray-400 line-through leading-none mb-1">
                               ${bundle.original}
                             </div>
                             <PriceEach price={bundle.perUnit} />
 
-                            {/* Badges kept on right to avoid center-pill conflict */}
                             {bundle.bestSeller && (
                               <div className="mt-1 bg-[#4D91FF] text-white px-2 py-0.5 rounded text-[9px] font-black">
                                 BEST SELLER
@@ -400,12 +522,10 @@ export default function BringWaglyHome() {
                         </div>
                       </div>
 
-                      {/* Expanded chooser (slots + grid) */}
                       {showChooser && (
                         <div className="border-t border-gray-200 bg-[#FBFAF6] p-5">
                           <div className="text-xl font-extrabold text-gray-900 mb-3">Choose Your Wagly</div>
 
-                          {/* Inventory slots */}
                           <div className="flex items-center gap-3 mb-4">
                             {Array.from({ length: bundle.qty }).map((_, slotIdx) => {
                               const filled = selectedPups[slotIdx];
@@ -465,7 +585,6 @@ export default function BringWaglyHome() {
                             </div>
                           </div>
 
-                          {/* Grid (6 pups) - grid-cols-2 for mobile (2x3), md:grid-cols-3 for desktop (3x2) */}
                           <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-w-xl mx-auto">
                             {pupOptions.map((p) => {
                               const count = pupCount(p.id);
@@ -483,7 +602,6 @@ export default function BringWaglyHome() {
                                       ? 'border-[#8A9A5B] ring-2 ring-[#8A9A5B]/20'
                                       : 'border-gray-200 hover:border-[#8A9A5B]'
                                   }`}>
-                                  {/* Count badge */}
                                   {count > 0 && (
                                     <div className="absolute top-2 right-2 min-w-[28px] h-7 px-2 rounded-full bg-[#8A9A5B] text-white text-xs font-extrabold flex items-center justify-center">
                                       x{count}
@@ -519,19 +637,105 @@ export default function BringWaglyHome() {
                 {/* PAYMENT METHODS */}
                 <div>
                   <div className="text-sm font-extrabold text-gray-900 mb-2">PAYMENT METHODS</div>
+
                   <div className="grid sm:grid-cols-2 gap-3">
-                    <div className="rounded-xl border border-gray-200 p-4 flex items-center gap-3">
-                      <CreditCard className="w-6 h-6 text-gray-900" />
-                      <div>
-                        <div className="font-bold text-gray-900">Card</div>
-                        <div className="text-xs text-gray-600">Visa, Mastercard, Amex</div>
-                      </div>
-                    </div>
-                    <div className="rounded-xl border border-gray-200 p-4 flex items-center gap-3">
-                      <Shield className="w-6 h-6 text-gray-900" />
+                    {/* Secure Checkout */}
+                    <div className="rounded-xl border border-gray-200 p-4 flex items-start gap-3">
+                      <Shield className="w-6 h-6 text-gray-900 flex-shrink-0" />
                       <div>
                         <div className="font-bold text-gray-900">Secure Checkout</div>
                         <div className="text-xs text-gray-600">Encrypted processing</div>
+                      </div>
+                    </div>
+
+                    {/* Card Payments (text only, no logos) */}
+                    <div className="rounded-xl border border-gray-200 p-4 flex items-start gap-3">
+                      <CreditCard className="w-6 h-6 text-gray-900 flex-shrink-0" />
+                      <div>
+                        <div className="font-bold text-gray-900">Card Payments</div>
+                        <div className="text-xs text-gray-600">Visa, MasterCard, AMEX</div>
+                      </div>
+                    </div>
+
+                    {/* Apple Pay (black Apple logo) */}
+                    <div className="rounded-xl border border-gray-200 p-4 flex items-start gap-3">
+                      <div className="w-6 h-6 text-gray-900 flex-shrink-0" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" className="w-6 h-6" fill="currentColor">
+                          <AppleIcon />
+                        </svg>
+                      </div>
+                      <div>
+                        <div className="font-bold text-gray-900">Apple Pay</div>
+                        <div className="text-xs text-gray-600">Fast checkout on Apple devices</div>
+                      </div>
+                    </div>
+
+                    {/* Robinhood */}
+                    <div className="rounded-xl border border-gray-200 p-4 flex items-start gap-3">
+                      <div className="w-6 h-6 text-gray-900 flex-shrink-0" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none">
+                          <path
+                            d="M18 6c-6 0-10 4.7-10 10.5V20l2.5-2.2c3.2-2.8 4.3-4.1 4.3-6.3 0-1.7 1.2-3 3.2-5.5z"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </div>
+                      <div>
+                        <div className="font-bold text-gray-900">Robinhood</div>
+                        <div className="text-xs text-gray-600">Supported payment option</div>
+                      </div>
+                    </div>
+
+                    {/* PayPal */}
+                    <div className="rounded-xl border border-gray-200 p-4 flex items-start gap-3">
+                      <div className="w-6 h-6 text-gray-900 flex-shrink-0" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none">
+                          <path
+                            d="M7 20l2-14h6.2c2.5 0 4 1.4 4 3.4 0 3.1-2.4 5.3-6.2 5.3H10"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinejoin="round"
+                          />
+                          <path d="M5 20l2-14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                        </svg>
+                      </div>
+                      <div>
+                        <div className="font-bold text-gray-900">PayPal</div>
+                        <div className="text-xs text-gray-600">Pay with your PayPal balance or linked methods</div>
+                      </div>
+                    </div>
+
+                    {/* Google Pay (black Google "G" mark style) */}
+                    <div className="rounded-xl border border-gray-200 p-4 flex items-start gap-3">
+                      <div className="w-6 h-6 text-gray-900 flex-shrink-0" aria-hidden="true">
+                        <GooglePayIcon />
+                      </div>
+                      <div>
+                        <div className="font-bold text-gray-900">Google Pay</div>
+                        <div className="text-xs text-gray-600">Quick checkout on supported devices</div>
+                      </div>
+                    </div>
+
+                    {/* Bank Transfer */}
+                    <div className="rounded-xl border border-gray-200 p-4 flex items-start gap-3 sm:col-span-2">
+                      <div className="w-6 h-6 text-gray-900 flex-shrink-0" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none">
+                          <path d="M4 10h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                          <path
+                            d="M6 10V19M10 10V19M14 10V19M18 10V19"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                          />
+                          <path d="M3 20h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                          <path d="M4 10l8-5 8 5" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+                        </svg>
+                      </div>
+                      <div>
+                        <div className="font-bold text-gray-900">Bank Transfer</div>
+                        <div className="text-xs text-gray-600">Available on the secure checkout page</div>
                       </div>
                     </div>
                   </div>
@@ -558,7 +762,7 @@ export default function BringWaglyHome() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Phone (optional)</label>
                       <input
                         type="tel"
                         value={phone}
@@ -656,7 +860,6 @@ export default function BringWaglyHome() {
                   </div>
                 </div>
 
-                {/* CTA */}
                 <button
                   type="submit"
                   className="w-full bg-[#FFD700] text-gray-900 py-4 rounded-full font-extrabold text-lg hover:brightness-95 transition-all hover:shadow-xl">
@@ -670,10 +873,9 @@ export default function BringWaglyHome() {
             </div>
           </div>
 
-          {/* RIGHT: totals + trust + reviews */}
+          {/* RIGHT */}
           <div>
             <div className="bg-white rounded-2xl p-6 shadow-lg sticky top-24">
-              {/* Total Savings + Order Summary */}
               <div className="border border-gray-200 rounded-2xl overflow-hidden mb-6">
                 <div className="px-5 py-4 flex items-center justify-between border-b border-gray-200">
                   <div className="text-sm font-semibold text-gray-600">Total Savings</div>
@@ -685,7 +887,6 @@ export default function BringWaglyHome() {
                 </div>
               </div>
 
-              {/* Why Choose Wagly */}
               <div className="mb-6">
                 <h3 className="text-lg font-extrabold text-gray-900 mb-4 text-center">Why Choose Wagly</h3>
 
@@ -722,7 +923,6 @@ export default function BringWaglyHome() {
                 </div>
               </div>
 
-              {/* Reviews */}
               <div className="border-t border-gray-200 pt-5">
                 <h3 className="text-lg font-extrabold text-gray-900 mb-3 text-center">Over 1,000 5-Star Reviews</h3>
 
@@ -777,7 +977,7 @@ export default function BringWaglyHome() {
               <h3 className="font-bold text-white mb-4">Company</h3>
               <ul className="space-y-2 text-sm">
                 <li>
-                  <a href="/" className="hover:text-white transition">
+                  <a href={HOME_PATH} className="hover:text-white transition">
                     Back to Home
                   </a>
                 </li>
