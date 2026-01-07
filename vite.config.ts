@@ -9,6 +9,6 @@ export default defineConfig({
     exclude: ['lucide-react'],
   },
   server: {
-    middlewareMode: true,
+    //middlewareMode: true,
   },
 });
