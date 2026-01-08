@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { X } from "lucide-react";
 import AboutUsModal from "./AboutUsModal";
 
@@ -66,7 +67,6 @@ function PolicyModal({
   policy: PolicyKey;
   onClose: () => void;
 }) {
-  // ESC to close
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -121,6 +121,35 @@ export default function Footer({
   const [openPolicy, setOpenPolicy] = useState<PolicyKey | null>(null);
   const [aboutOpen, setAboutOpen] = useState(false);
 
+  // IMPORTANT: BrowserRouter already applies basename.
+  // If you pass "/Wagly/" into <Link to>, you’ll get "/Wagly/Wagly/".
+  const backToHomeTo = useMemo(() => {
+    const BASE = import.meta.env.BASE_URL || "/"; // e.g. "/Wagly/"
+    const baseNoTrailing = BASE.endsWith("/") ? BASE.slice(0, -1) : BASE;
+
+    if (!homeHref) return "/";
+
+    // Normalize common "base path" values back to route-root "/"
+    if (homeHref === BASE || homeHref === baseNoTrailing) return "/";
+
+    // If someone passes a BASE-prefixed URL, strip the BASE and convert to a route path
+    if (homeHref.startsWith(BASE)) {
+      const rest = homeHref.slice(BASE.length); // e.g. "bring-wagly-home" or ""
+      return "/" + (rest || "");
+    }
+
+    if (baseNoTrailing && homeHref.startsWith(baseNoTrailing + "/")) {
+      const rest = homeHref.slice((baseNoTrailing + "/").length);
+      return "/" + (rest || "");
+    }
+
+    // If it's already a route path, keep it
+    if (homeHref.startsWith("/")) return homeHref;
+
+    // Otherwise treat as relative route segment
+    return "/" + homeHref;
+  }, [homeHref]);
+
   return (
     <>
       <footer
@@ -131,14 +160,14 @@ export default function Footer({
             <div>
               <h3 className="font-extrabold text-gray-900 mb-4">Company</h3>
               <ul className="space-y-2 text-sm">
-                {showBackToHome && homeHref ? (
+                {showBackToHome ? (
                   <li>
-                    <a
-                      href={homeHref}
+                    <Link
+                      to={backToHomeTo}
                       className="hover:text-[#8A9A5B] transition font-semibold"
                     >
                       Back to Home
-                    </a>
+                    </Link>
                   </li>
                 ) : null}
 
@@ -242,14 +271,8 @@ export default function Footer({
         </div>
       </footer>
 
-      {/* About Us modal */}
-      <AboutUsModal
-        isOpen={aboutOpen}
-        onClose={() => setAboutOpen(false)}
-        // photoSrc="" // leave blank for now; add later when you have the image
-      />
+      <AboutUsModal isOpen={aboutOpen} onClose={() => setAboutOpen(false)} />
 
-      {/* Policy modal */}
       {openPolicy && (
         <PolicyModal policy={openPolicy} onClose={() => setOpenPolicy(null)} />
       )}
