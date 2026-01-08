@@ -103,7 +103,7 @@ export default function Home() {
       rating: 5,
       upvotes: 20,
       downvotes: 0,
-      photos: ['/wagly-pup.png', '/steps/step2.avif']
+      photos: ['/reviews/review1.png']
     },
     {
       id: 2,
@@ -113,7 +113,7 @@ export default function Home() {
       rating: 5,
       upvotes: 39,
       downvotes: 1,
-      photos: ['/steps/step1.avif']
+      photos: ['/reviews/review2.png']
     },
     {
       id: 3,
@@ -123,7 +123,7 @@ export default function Home() {
       rating: 5,
       upvotes: 10,
       downvotes: 0,
-      photos: ['/wagly-pup.png']
+      photos: ['/reviews/review3.png']
     },
     {
       id: 4,
@@ -133,7 +133,7 @@ export default function Home() {
       rating: 5,
       upvotes: 8,
       downvotes: 0,
-      photos: ['/steps/step3.avif']
+      photos: ['/reviews/review4.png']
     },
     {
       id: 5,
@@ -170,7 +170,7 @@ export default function Home() {
       rating: 5,
       upvotes: 18,
       downvotes: 0,
-      photos: ['/wagly-pup.png']
+      photos: ['/reviews/review5.png']
     },
     {
       id: 9,
