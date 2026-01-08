@@ -15,6 +15,11 @@ export default function AboutUsModal({
 }: AboutUsModalProps) {
   const [noGlasses, setNoGlasses] = useState(false);
 
+  // ✅ Default to your public image if no prop is provided
+const resolvedPhotoSrc =
+  photoSrc ?? `${import.meta.env.BASE_URL}Anne-Miller-headshot.png`;
+
+
   // Reset mode when closing
   useEffect(() => {
     if (!isOpen) setNoGlasses(false);
@@ -118,21 +123,12 @@ export default function AboutUsModal({
                 <div
                   className={`${photoBoxClass} rounded-2xl bg-white shadow-sm border border-black/10 overflow-hidden flex items-center justify-center`}
                 >
-                  {photoSrc ? (
-                    <img
-                      src={photoSrc}
-                      alt="Anna Miller"
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div
-                      className={`${
-                        noGlasses ? "text-sm" : "text-xs"
-                      } text-gray-400 px-2 text-center`}
-                    >
-                      Photo
-                    </div>
-                  )}
+                  <img
+                    src={resolvedPhotoSrc}
+                    alt="Anna Miller"
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
                 </div>
 
                 <div>

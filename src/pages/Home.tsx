@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {
   Battery,
   Bot,
@@ -23,8 +23,6 @@ import {
 import { ReviewModal } from '../components/ReviewModal';
 import { ContactModal } from '../components/ContactModal';
 import Footer from '../components/Footer';
-
-
 
 interface ReviewItem {
   id: number;
@@ -80,7 +78,6 @@ function OthersDogIcon({ className = 'w-10 h-10' }: { className?: string }) {
 }
 
 export default function Home() {
-  const navigate = useNavigate();
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [showContactModal, setShowContactModal] = useState(false);
   const BASE = import.meta.env.BASE_URL;
@@ -241,12 +238,6 @@ export default function Home() {
     if (element) element.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const goToPurchaseTop = () => {
-    navigate('/bring-wagly-home');
-    requestAnimationFrame(() => window.scrollTo({ top: 0, left: 0, behavior: 'auto' }));
-    setTimeout(() => window.scrollTo({ top: 0, left: 0, behavior: 'auto' }), 60);
-  };
-
   const handleLoadMore = () => {
     const newCount = Math.min(displayedReviews.length + 3, reviews.length);
     setDisplayedReviews(reviews.slice(0, newCount));
@@ -376,11 +367,11 @@ export default function Home() {
               Contact
             </button>
 
-            <button
-              onClick={goToPurchaseTop}
+            <Link
+              to="/bring-wagly-home"
               className="bg-[#8A9A5B] text-white px-6 py-2 rounded-full hover:bg-[#7a8a4b] transition font-semibold">
               Bring Wagly Home
-            </button>
+            </Link>
           </nav>
         </div>
       </header>
@@ -427,11 +418,12 @@ export default function Home() {
             <p className="text-gray-400 text-lg">Interactive Wagly Product Display</p>
           </div>
 
-          <button
-            onClick={goToPurchaseTop}
+          <Link
+            to="/bring-wagly-home"
             className="inline-block mt-12 bg-[#8A9A5B] text-white px-8 py-4 rounded-full hover:bg-[#7a8a4b] transition font-bold text-lg">
             Get Up to 72% Off
-          </button>
+          </Link>
+
           <p className="text-sm text-gray-500 mt-3">Limited stock available at the discounted bundles.</p>
         </div>
       </section>
@@ -973,11 +965,11 @@ export default function Home() {
             awkwardness.
           </p>
 
-          <button
-            onClick={goToPurchaseTop}
+          <Link
+            to="/bring-wagly-home"
             className="inline-block bg-white text-[#8A9A5B] px-8 py-4 rounded-full hover:bg-gray-100 transition font-bold text-lg">
             Get Up to 72% Off
-          </button>
+          </Link>
         </div>
       </section>
 
