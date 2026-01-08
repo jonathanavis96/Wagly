@@ -22,6 +22,9 @@ import {
 } from 'lucide-react';
 import { ReviewModal } from '../components/ReviewModal';
 import { ContactModal } from '../components/ContactModal';
+import Footer from '../components/Footer';
+
+
 
 interface ReviewItem {
   id: number;
@@ -34,139 +37,163 @@ interface ReviewItem {
   photos?: string[]; // optional thumbnails in the review card
 }
 
-const reviews: ReviewItem[] = [
-  {
-    id: 1,
-    name: 'Margaret T.',
-    title: 'Grandmother',
-    text: "My granddaughter absolutely adores Wagly. It's the sweetest little companion and such a lovely gift.",
-    rating: 5,
-    upvotes: 20,
-    downvotes: 0,
-    photos: ['/wagly-pup.png', '/steps/step2.avif']
-  },
-  {
-    id: 2,
-    name: 'Sarah L.',
-    title: 'Parent',
-    text: "Finally something that keeps my little one busy without a screen. He talks to it like it's real and it melts my heart.",
-    rating: 5,
-    upvotes: 39,
-    downvotes: 1,
-    photos: ['/steps/step1.avif']
-  },
-  {
-    id: 3,
-    name: 'David K.',
-    title: 'Dad of Two',
-    text: 'We have allergies so a real dog is not possible. Wagly gives the kids that puppy joy without the sneezes.',
-    rating: 5,
-    upvotes: 10,
-    downvotes: 0
-  },
-  {
-    id: 4,
-    name: 'Jennifer M.',
-    title: 'Aunt',
-    text: 'Best gift I have given in ages. The kids play together and it feels really well made.',
-    rating: 5,
-    upvotes: 8,
-    downvotes: 0,
-    photos: ['/steps/step3.avif']
-  },
-  {
-    id: 5,
-    name: 'Robert H.',
-    title: 'Grandfather',
-    text: 'Quality is excellent. My grandson still loves it weeks later and it has held up beautifully.',
-    rating: 5,
-    upvotes: 4,
-    downvotes: 0
-  },
-  {
-    id: 6,
-    name: 'Lisa B.',
-    title: 'Teacher',
-    text: 'I recommend Wagly to families who want gentle, imaginative play. It is a lovely alternative to more screen time.',
-    rating: 5,
-    upvotes: 15,
-    downvotes: 0
-  },
-  {
-    id: 7,
-    name: 'Tom W.',
-    title: 'Parent',
-    text: 'Fast shipping and helpful support when I had a question. The toy itself is adorable.',
-    rating: 5,
-    upvotes: 12,
-    downvotes: 0
-  },
-  {
-    id: 8,
-    name: 'Caroline P.',
-    title: 'Grandmother',
-    text: 'Perfect for sending overseas to my grandchild. Came nicely packaged and the smiles were priceless.',
-    rating: 5,
-    upvotes: 18,
-    downvotes: 0
-  },
-  {
-    id: 9,
-    name: 'Michael J.',
-    title: 'Father',
-    text: "Not just a toy, it becomes a little buddy. My daughter is so gentle with it and that's been wonderful to see.",
-    rating: 5,
-    upvotes: 7,
-    downvotes: 0
-  },
-  {
-    id: 10,
-    name: 'Patricia S.',
-    title: 'Parent',
-    text: 'Really cute and the reactions are sweet. Battery compartment could be a bit easier, but overall very happy.',
-    rating: 4,
-    upvotes: 6,
-    downvotes: 2
-  }
-];
-
 function OthersDogIcon({ className = 'w-10 h-10' }: { className?: string }) {
-  // Simple generic line-dog icon (no extra asset needed)
+  // Clear dog-head icon (more recognizable than the previous abstract lines)
   return (
     <svg viewBox="0 0 64 64" fill="none" className={className} aria-hidden="true">
+      {/* ears */}
       <path
-        d="M18 26c-4-6-10-7-12-1 2 6 6 9 12 9"
+        d="M18 22c-5-4-9-4-11 0 2 7 6 10 11 11"
         stroke="currentColor"
         strokeWidth="3"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
-        d="M46 26c4-6 10-7 12-1-2 6-6 9-12 9"
+        d="M46 22c5-4 9-4 11 0-2 7-6 10-11 11"
         stroke="currentColor"
         strokeWidth="3"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
+      {/* head */}
       <path
-        d="M24 26c0-6 4-10 8-10s8 4 8 10v12c0 4-4 8-8 8s-8-4-8-8V26Z"
+        d="M22 26c0-7 5-12 10-12s10 5 10 12v12c0 6-5 11-10 11s-10-5-10-11V26Z"
         stroke="currentColor"
         strokeWidth="3"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <path d="M28 34h8" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-      <path d="M30 40c1 1 3 1 4 0" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+      {/* snout + mouth */}
+      <path
+        d="M26 34c2 2 4 3 6 3s4-1 6-3"
+        stroke="currentColor"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path d="M30 40c1 1 3 1 4 0" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+      {/* nose */}
+      <path d="M32 37.5h0.01" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
     </svg>
   );
 }
 
 export default function Home() {
   const navigate = useNavigate();
-
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [showContactModal, setShowContactModal] = useState(false);
   const BASE = import.meta.env.BASE_URL;
+
+  // Ensures images work on both localhost and GH Pages (/Wagly/)
+  const withBase = (src: string) => {
+    if (!src) return src;
+    if (/^https?:\/\//i.test(src)) return src;
+    if (src.startsWith('/')) return `${BASE}${src.slice(1)}`;
+    return `${BASE}${src}`;
+  };
+
+  const WAGLY_IMG = withBase('/wagly-nobackground-1.png');
+
+  // Updated review names to match your distribution:
+  // 40% first-name only, 20% full surname, 20% first-letter surname, 20% anonymous
+  const reviews: ReviewItem[] = [
+    {
+      id: 1,
+      name: 'Margaret Thompson', // full surname
+      title: 'Grandmother',
+      text: "My granddaughter absolutely adores Wagly. It's the sweetest little companion and such a lovely gift.",
+      rating: 5,
+      upvotes: 20,
+      downvotes: 0,
+      photos: ['/wagly-pup.png', '/steps/step2.avif']
+    },
+    {
+      id: 2,
+      name: 'Sarah', // first name only
+      title: 'Parent',
+      text: "Finally something that keeps my little one busy without a screen. He talks to it like it's real and it melts my heart.",
+      rating: 5,
+      upvotes: 39,
+      downvotes: 1,
+      photos: ['/steps/step1.avif']
+    },
+    {
+      id: 3,
+      name: 'Anonymous',
+      title: 'Verified Buyer', // will render as Anonymous (Verified Buyer)
+      text: 'We have allergies so a real dog is not possible. Wagly gives the kids that puppy joy without the sneezes.',
+      rating: 5,
+      upvotes: 10,
+      downvotes: 0,
+      photos: ['/wagly-pup.png']
+    },
+    {
+      id: 4,
+      name: 'Jennifer', // first name only
+      title: 'Aunt',
+      text: 'Best gift I have given in ages. The kids play together and it feels really well made.',
+      rating: 5,
+      upvotes: 8,
+      downvotes: 0,
+      photos: ['/steps/step3.avif']
+    },
+    {
+      id: 5,
+      name: 'Robert H', // first letter surname (no dot)
+      title: 'Grandfather',
+      text: 'Quality is excellent. My grandson still loves it weeks later and it has held up beautifully.',
+      rating: 5,
+      upvotes: 4,
+      downvotes: 0
+    },
+    {
+      id: 6,
+      name: 'Lisa', // first name only
+      title: 'Teacher',
+      text: 'I recommend Wagly to families who want gentle, imaginative play. It is a lovely alternative to more screen time.',
+      rating: 5,
+      upvotes: 15,
+      downvotes: 0
+    },
+    {
+      id: 7,
+      name: 'Tom', // first name only
+      title: 'Parent',
+      text: 'Fast shipping and helpful support when I had a question. The toy itself is adorable.',
+      rating: 5,
+      upvotes: 12,
+      downvotes: 0
+    },
+    {
+      id: 8,
+      name: 'Caroline Patel', // full surname
+      title: 'Grandmother',
+      text: 'Perfect for sending overseas to my grandchild. Came nicely packaged and the smiles were priceless.',
+      rating: 5,
+      upvotes: 18,
+      downvotes: 0,
+      photos: ['/wagly-pup.png']
+    },
+    {
+      id: 9,
+      name: 'Michael J', // first letter surname (no dot)
+      title: 'Father',
+      text: "Not just a toy, it becomes a little buddy. My daughter is so gentle with it and that's been wonderful to see.",
+      rating: 5,
+      upvotes: 7,
+      downvotes: 0
+    },
+    {
+      id: 10,
+      name: 'Patricia', // first name only
+      title: 'Parent',
+      text: 'Really cute and the reactions are sweet. Battery compartment could be a bit easier, but overall very happy.',
+      rating: 4,
+      upvotes: 6,
+      downvotes: 2
+    }
+  ];
 
   const [displayedReviews, setDisplayedReviews] = useState<ReviewItem[]>(reviews.slice(0, 3));
   const [reviewVotes, setReviewVotes] = useState<Record<number, { upvotes: number; downvotes: number }>>({});
@@ -184,8 +211,7 @@ export default function Home() {
     } as Record<1 | 2 | 3 | 4 | 5, number>;
 
     const weighted = 5 * counts[5] + 4 * counts[4] + 3 * counts[3] + 2 * counts[2] + 1 * counts[1];
-
-    const avg = weighted / total; // ~4.699
+    const avg = weighted / total;
 
     return {
       total,
@@ -207,7 +233,7 @@ export default function Home() {
       initialVotes[review.id] = { upvotes: review.upvotes, downvotes: review.downvotes };
     });
     setReviewVotes(initialVotes);
-  }, []);
+  }, [reviews]);
 
   const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
     e.preventDefault();
@@ -217,7 +243,6 @@ export default function Home() {
 
   const goToPurchaseTop = () => {
     navigate('/bring-wagly-home');
-    // Force top after navigation (and again shortly after) so user sees scarcity/stock first
     requestAnimationFrame(() => window.scrollTo({ top: 0, left: 0, behavior: 'auto' }));
     setTimeout(() => window.scrollTo({ top: 0, left: 0, behavior: 'auto' }), 60);
   };
@@ -255,7 +280,7 @@ export default function Home() {
     {
       key: 'realistic',
       q: 'How realistic is Wagly compared to other robot puppy toys?',
-      a: "Wagly is made to feel like a real little puppy friend. It reacts to gentle touch, makes sweet sounds, and has playful movements that kids love. It's not just a repeating toy, it feels more personal and cozy."
+      a: 'Wagly is made to feel like a real little puppy friend. It reacts to gentle touch, makes sweet sounds, and has playful movements that kids love. It is not just a repeating toy, it feels more personal and cozy.'
     },
     {
       key: 'ai',
@@ -280,12 +305,12 @@ export default function Home() {
     {
       key: 'noise',
       q: 'Is it loud?',
-      a: "It is designed to be family-friendly. The sounds are cute and not harsh. Many grandparents tell us it's much nicer than noisy plastic toys."
+      a: 'It is designed to be family-friendly. The sounds are cute and not harsh. Many grandparents tell us it is much nicer than noisy plastic toys.'
     },
     {
       key: 'allergies',
       q: 'Will it shed or trigger allergies?',
-      a: "Wagly is plush and allergy-friendly for most families. No shedding like a real pet, and no dander. If your family has severe allergies, it's still a great option compared to a real dog."
+      a: 'Wagly is plush and allergy-friendly for most families. No shedding like a real pet, and no dander. If your family has severe allergies, it is still a great option compared to a real dog.'
     },
     {
       key: 'clean',
@@ -308,6 +333,12 @@ export default function Home() {
       a: 'You can contact us anytime and we will help you. We know gift shopping can be stressful, so we keep support friendly and simple.'
     }
   ];
+
+  const attributionText = (review: ReviewItem) => {
+    if (review.name === 'Anonymous') return 'Anonymous (Verified Buyer)';
+    if (!review.title) return review.name;
+    return `${review.name} (${review.title})`;
+  };
 
   return (
     <div className="min-h-screen bg-[#F9F6F0]">
@@ -405,7 +436,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Your Best Wagly Friend (moved directly below hero display + CTA) */}
+      {/* Your Best Wagly Friend */}
       <section className="bg-[#F9F6F0] py-20">
         <div className="max-w-7xl mx-auto px-6 text-center">
           <h2 className="text-4xl font-serif font-bold text-gray-900 mb-4">Your Best Wagly Friend</h2>
@@ -434,7 +465,12 @@ export default function Home() {
 
             {/* Center image */}
             <div className="flex justify-center">
-              <img src={`${BASE}wagly-pup.png`} alt="Wagly puppy" className="w-44 h-44 object-contain drop-shadow-sm" />
+              <img
+                src={WAGLY_IMG}
+                alt="Wagly puppy"
+                className="w-56 h-56 md:w-60 md:h-60 object-contain drop-shadow-sm"
+                loading="lazy"
+              />
             </div>
 
             {/* Right list */}
@@ -571,25 +607,24 @@ export default function Home() {
                 title: 'Turn On Wagly',
                 icon: Power,
                 desc: 'Add the batteries and flip the switch. You will hear a happy little bark.',
-                img: `${BASE}steps/step1.avif`
+                img: withBase('/steps/step1.avif')
               },
               {
                 n: 2,
                 title: 'Say Hello',
                 icon: MessageCircle,
                 desc: 'Gently pet Wagly or call it over. The sensors respond right away.',
-                img: `${BASE}steps/step2.avif`
+                img: withBase('/steps/step2.avif')
               },
               {
                 n: 3,
                 title: 'Have Fun Together',
                 icon: PawPrint,
                 desc: 'Play, cuddle, and enjoy those sweet family moments.',
-                img: `${BASE}steps/step3.avif`
+                img: withBase('/steps/step3.avif')
               }
             ].map((step) => (
               <div key={step.n} className="bg-[#F9F6F0] rounded-2xl overflow-hidden shadow-sm">
-                {/* Image area (nice fit + rounded edges) */}
                 <div className="relative p-5">
                   <div className="relative w-full aspect-[4/3] overflow-hidden rounded-2xl bg-white">
                     <img
@@ -620,7 +655,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Why Wagly (comparison table) */}
+      {/* Why Wagly */}
       <section className="bg-[#F9F6F0] py-24">
         <div className="max-w-7xl mx-auto px-6">
           <h2 className="text-4xl font-serif font-bold text-gray-900 text-center mb-3">Why Wagly?</h2>
@@ -630,55 +665,129 @@ export default function Home() {
           </p>
 
           <div className="bg-white rounded-3xl shadow-sm overflow-hidden">
-            {/* Top header row */}
-            <div className="grid grid-cols-3">
-              <div className="p-8 bg-white">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">Comparing Wagly to other toys</h3>
+            {/* MOBILE layout */}
+            <div className="md:hidden">
+              <div className="p-6 border-b border-gray-100">
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Comparing Wagly to other toys</h3>
                 <p className="text-gray-600" style={{ lineHeight: '1.6' }}>
                   The little differences add up, especially for parents and grandparents choosing a gift.
                 </p>
+
+                <div className="mt-6 grid grid-cols-2 gap-4">
+                  <div className="bg-[#F9F6F0] rounded-2xl p-4 text-center">
+                    <div className="w-16 h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center mx-auto">
+                      <img src={WAGLY_IMG} alt="Wagly" className="w-12 h-12 object-contain" loading="lazy" />
+                    </div>
+                    <div className="mt-3 font-bold text-gray-900">Wagly</div>
+                    <div className="text-xs text-gray-600">Our cuddly companion</div>
+                  </div>
+
+                  <div className="bg-[#F9F6F0] rounded-2xl p-4 text-center">
+                    <div className="w-16 h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center mx-auto text-gray-800">
+                      <OthersDogIcon className="w-10 h-10 text-gray-800" />
+                    </div>
+                    <div className="mt-3 font-bold text-gray-900">Others</div>
+                    <div className="text-xs text-gray-600">Typical robot toys</div>
+                  </div>
+                </div>
               </div>
 
-              <div className="p-8 bg-[#F9F6F0] flex flex-col items-center justify-center border-l border-gray-100">
-                <div className="w-20 h-20 rounded-2xl bg-white shadow-sm flex items-center justify-center">
-                  <img src="/wagly-pup.png" alt="Wagly" className="w-14 h-14 object-contain" />
-                </div>
-                <div className="mt-3 font-bold text-gray-900">Wagly</div>
-                <div className="text-sm text-gray-600">Our cuddly companion</div>
-              </div>
-
-              <div className="p-8 bg-[#F9F6F0] flex flex-col items-center justify-center border-l border-gray-100">
-                <div className="w-20 h-20 rounded-2xl bg-white shadow-sm flex items-center justify-center text-gray-800">
-                  <OthersDogIcon className="w-12 h-12 text-gray-800" />
-                </div>
-                <div className="mt-3 font-bold text-gray-900">Others</div>
-                <div className="text-sm text-gray-600">Typical robot toys</div>
-              </div>
+              {[
+                'Realistic, puppy-like reactions',
+                'Touch-responsive interaction',
+                'Soft, cuddly, gift-ready design',
+                '6 color options',
+                'Made for screen-free play',
+                'Allergy-friendly for families'
+              ].map((label, idx) => {
+                const waglyYes = true;
+                const othersYes = label === '6 color options';
+                return (
+                  <div key={idx} className="p-6 border-b border-gray-100">
+                    <div className="text-gray-900 font-semibold mb-4">{label}</div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="flex items-center justify-center gap-2 bg-gray-50 rounded-xl py-3">
+                        <span className="text-sm font-semibold text-gray-800">Wagly</span>
+                        {waglyYes ? (
+                          <Check className="w-5 h-5 text-[#8A9A5B]" />
+                        ) : (
+                          <X className="w-5 h-5 text-red-500" />
+                        )}
+                      </div>
+                      <div className="flex items-center justify-center gap-2 bg-gray-50 rounded-xl py-3">
+                        <span className="text-sm font-semibold text-gray-800">Others</span>
+                        {othersYes ? (
+                          <Check className="w-5 h-5 text-[#8A9A5B]" />
+                        ) : (
+                          <X className="w-5 h-5 text-red-500" />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
 
-            {/* Rows */}
-            {[
-              'Realistic, puppy-like reactions',
-              'Touch-responsive interaction',
-              'Soft, cuddly, gift-ready design',
-              'Made for screen-free play',
-              'Allergy-friendly for families',
-              '6 color options'
-            ].map((label, idx) => {
-              const waglyYes = true;
-              const othersYes = label === '6 color options'; // only this one is "yes" for others, like your example
-              return (
-                <div key={idx} className="grid grid-cols-3 border-t border-gray-100">
-                  <div className="p-6 text-gray-900 font-medium">{label}</div>
-                  <div className="p-6 flex items-center justify-center">
-                    {waglyYes ? <Check className="w-6 h-6 text-[#8A9A5B]" /> : <X className="w-6 h-6 text-red-500" />}
-                  </div>
-                  <div className="p-6 flex items-center justify-center">
-                    {othersYes ? <Check className="w-6 h-6 text-[#8A9A5B]" /> : <X className="w-6 h-6 text-red-500" />}
-                  </div>
+            {/* DESKTOP layout */}
+            <div className="hidden md:block">
+              <div className="grid grid-cols-3">
+                <div className="p-8 bg-white">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">Comparing Wagly to other toys</h3>
+                  <p className="text-gray-600" style={{ lineHeight: '1.6' }}>
+                    The little differences add up, especially for parents and grandparents choosing a gift.
+                  </p>
                 </div>
-              );
-            })}
+
+                <div className="p-8 bg-[#F9F6F0] flex flex-col items-center justify-center border-l border-gray-100">
+                  <div className="w-20 h-20 rounded-2xl bg-white shadow-sm flex items-center justify-center">
+                    <img src={WAGLY_IMG} alt="Wagly" className="w-14 h-14 object-contain" loading="lazy" />
+                  </div>
+                  <div className="mt-3 font-bold text-gray-900">Wagly</div>
+                  <div className="text-sm text-gray-600">Our cuddly companion</div>
+                </div>
+
+                <div className="p-8 bg-[#F9F6F0] flex flex-col items-center justify-center border-l border-gray-100">
+                  <div className="w-20 h-20 rounded-2xl bg-white shadow-sm flex items-center justify-center">
+                    <img
+                      src={withBase('/other-dogs.png')}
+                      alt="Other robot dogs"
+                      className="w-14 h-14 object-contain"
+                      loading="lazy"
+                    />
+                  </div>
+
+                  <div className="mt-3 font-bold text-gray-900">Others</div>
+                  <div className="text-sm text-gray-600">Typical robot toys</div>
+                </div>
+              </div>
+
+              {[
+                'Realistic, puppy-like reactions',
+                'Touch-responsive interaction',
+                'Soft, cuddly, gift-ready design',
+                '6 color options',
+                'Made for screen-free play',
+                'Allergy-friendly for families'
+              ].map((label, idx) => {
+                const waglyYes = true;
+                const othersYes = label === '6 color options';
+                return (
+                  <div key={idx} className="grid grid-cols-3 border-t border-gray-100">
+                    <div className="p-6 text-gray-900 font-medium">{label}</div>
+                    <div className="p-6 flex items-center justify-center">
+                      {waglyYes ? <Check className="w-6 h-6 text-[#8A9A5B]" /> : <X className="w-6 h-6 text-red-500" />}
+                    </div>
+                    <div className="p-6 flex items-center justify-center">
+                      {othersYes ? (
+                        <Check className="w-6 h-6 text-[#8A9A5B]" />
+                      ) : (
+                        <X className="w-6 h-6 text-red-500" />
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </section>
@@ -694,10 +803,9 @@ export default function Home() {
           </button>
         </div>
 
-        {/* Rating summary (like screenshot, green theme) */}
+        {/* Rating summary */}
         <div className="bg-white rounded-3xl shadow-sm p-10 mb-12">
           <div className="grid md:grid-cols-3 gap-10 items-center">
-            {/* Left: average */}
             <div className="text-center md:text-left">
               <div className="text-6xl font-bold text-gray-900">{reviewSummary.averageDisplay.toFixed(1)}</div>
               <div className="flex items-center justify-center md:justify-start gap-1 mt-2">
@@ -708,7 +816,6 @@ export default function Home() {
               <div className="text-gray-600 mt-2">{reviewSummary.total.toLocaleString()} reviews</div>
             </div>
 
-            {/* Middle: distribution bars */}
             <div className="space-y-3">
               {[5, 4, 3, 2, 1].map((star) => {
                 const count = reviewSummary.counts[star as 1 | 2 | 3 | 4 | 5];
@@ -725,7 +832,6 @@ export default function Home() {
               })}
             </div>
 
-            {/* Right: recommend + bars */}
             <div className="space-y-5">
               <div className="text-gray-700">
                 <span className="font-bold text-gray-900">{reviewSummary.recommendPercent}%</span> of reviewers would
@@ -758,13 +864,12 @@ export default function Home() {
                     ))}
                   </div>
 
-                  {/* Optional photos */}
                   {review.photos && review.photos.length > 0 && (
-                    <div className="flex gap-3 mb-4">
+                    <div className="flex gap-3 mb-4 flex-wrap">
                       {review.photos.slice(0, 4).map((src, idx) => (
                         <img
                           key={idx}
-                          src={src}
+                          src={withBase(src)}
                           alt="Review photo"
                           className="w-16 h-16 rounded-xl object-cover border border-gray-200"
                           loading="lazy"
@@ -776,9 +881,9 @@ export default function Home() {
                   <p className="text-gray-600 mb-4" style={{ lineHeight: '1.6' }}>
                     {review.text}
                   </p>
-                  <p className="text-sm text-gray-500 font-medium">
-                    — {review.name}, {review.title}
-                  </p>
+
+                  {/* No dash prefix, clean formatting */}
+                  <p className="text-sm text-gray-500 font-medium">{attributionText(review)}</p>
                 </div>
               </div>
 
@@ -814,7 +919,7 @@ export default function Home() {
         )}
       </section>
 
-      {/* FAQ (interactive accordion) */}
+      {/* FAQ */}
       <section id="faq" className="bg-white py-24">
         <div className="max-w-4xl mx-auto px-6">
           <h2 className="text-4xl font-serif font-bold text-gray-900 text-center mb-4">Frequently Asked Questions</h2>
@@ -842,7 +947,6 @@ export default function Home() {
             })}
           </div>
 
-          {/* Quick info row */}
           <div className="grid md:grid-cols-4 gap-4 mt-12">
             {[
               { icon: WifiOff, label: 'No Wi-Fi needed' },
@@ -878,70 +982,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-gray-300 py-12">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
-            <div>
-              <h3 className="font-bold text-white mb-4">Company</h3>
-              <ul className="space-y-2 text-sm">
-                <li>
-                  <button onClick={() => setShowContactModal(true)} className="hover:text-white transition">
-                    Contact Us
-                  </button>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition">
-                    About Us
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="font-bold text-white mb-4">Policies</h3>
-              <ul className="space-y-2 text-sm">
-                <li>
-                  <a href="#" className="hover:text-white transition">
-                    Terms & Conditions
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition">
-                    Privacy Policy
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition">
-                    Refund Policy
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition">
-                    Shipping Policy
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="font-bold text-white mb-4">Support</h3>
-              <ul className="space-y-2 text-sm">
-                <li>Phone: +1 (888) 555-0199</li>
-                <li>Email: myhearthsidepets@gmail.com</li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="font-bold text-white mb-4">Secure Payment</h3>
-              <p className="text-sm">We process payments securely via Card2Crypto and never store card details.</p>
-            </div>
-          </div>
-
-          <div className="border-t border-gray-700 pt-8 text-center text-sm">
-            <p>© 2026 Wagly. All rights reserved. Made with love for families everywhere.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer onOpenContact={() => setShowContactModal(true)} />
 
       {showReviewModal && <ReviewModal onClose={() => setShowReviewModal(false)} />}
       {showContactModal && <ContactModal onClose={() => setShowContactModal(false)} />}

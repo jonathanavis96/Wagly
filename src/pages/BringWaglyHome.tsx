@@ -1,6 +1,10 @@
 // BringWaglyHome.tsx
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Clock, CreditCard, Headphones, Shield, Tag, Users } from 'lucide-react';
+import Footer from '../components/Footer';
+import { ContactModal } from '../components/ContactModal';
+
+
 
 type BundleKey = '1' | '2' | '3' | '4';
 
@@ -140,6 +144,7 @@ function GooglePayIcon() {
 }
 
 export default function BringWaglyHome() {
+  const [showContactModal, setShowContactModal] = useState(false);
   const [selectedBundle, setSelectedBundle] = useState<BundleKey>('3');
 
   // 10 min timer
@@ -986,61 +991,8 @@ export default function BringWaglyHome() {
         </div>
       </div>
 
-      <footer className="bg-gray-900 text-gray-300 py-12 mt-16">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
-            <div>
-              <h3 className="font-bold text-white mb-4">Company</h3>
-              <ul className="space-y-2 text-sm">
-                <li>
-                  <a href={HOME_PATH} className="hover:text-white transition">
-                    Back to Home
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-bold text-white mb-4">Policies</h3>
-              <ul className="space-y-2 text-sm">
-                <li>
-                  <a href="#" className="hover:text-white transition">
-                    Terms & Conditions
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition">
-                    Privacy Policy
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition">
-                    Refund Policy
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition">
-                    Shipping Policy
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-bold text-white mb-4">Support</h3>
-              <ul className="space-y-2 text-sm">
-                <li>Phone: +1 (888) 555-0199</li>
-                <li>Email: myhearthsidepets@gmail.com</li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-bold text-white mb-4">Secure Payment</h3>
-              <p className="text-sm">We process payments securely via Card2Crypto and never store card details.</p>
-            </div>
-          </div>
-          <div className="border-t border-gray-700 pt-8 text-center text-sm">
-            <p>© 2026 Wagly. All rights reserved. Made with love for families everywhere.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer homeHref={HOME_PATH} showBackToHome className="mt-16" onOpenContact={() => setShowContactModal(true)} />
+      {showContactModal && <ContactModal onClose={() => setShowContactModal(false)} />}
     </div>
   );
 }
