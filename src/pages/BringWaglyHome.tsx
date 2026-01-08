@@ -48,7 +48,7 @@ const ROUTES: Record<BundleKey, string> = {
 const FORMSPREE_ENDPOINT = 'https://formspree.io/f/mvzgeowa';
 
 // Vite + GH Pages safe paths (BASE_URL typically ends with "/")
-const PUP_IMAGE_SRC = `${import.meta.env.BASE_URL}wagly-pup.png`;
+const PUP_IMAGE_SRC = `${import.meta.env.BASE_URL}wagly-nobackground-1.png`;
 
 // GitHub Pages “home” should be BASE_URL (e.g. "/Wagly/"), not "/"
 const HOME_PATH = (() => {
