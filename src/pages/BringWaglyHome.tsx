@@ -181,6 +181,11 @@ export default function BringWaglyHome() {
   const [selectedPups, setSelectedPups] = useState<PupOption[]>([]);
   const [justFilledSlotIndex, setJustFilledSlotIndex] = useState<number | null>(null);
 
+  // Form submission states
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+
   const currentBundle = bundles[selectedBundle];
 
   // keep selected pups aligned to bundle qty (trim oldest first to preserve most recent choices)
@@ -379,34 +384,46 @@ export default function BringWaglyHome() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    setIsSubmitting(true);
+    setSubmitError(null);
+    setSubmitSuccess(false);
+
+    const payload = {
+      bundle: selectedBundle,
+      qty: currentBundle.qty,
+      amount: currentBundle.total,
+      fullName,
+      email,
+      phone,
+      country,
+      address1,
+      address2,
+      city,
+      stateRegion,
+      zip,
+      selectedPups: selectedPups.map((p) => p.name).join(', ')
+    };
 
     try {
-      const payload = {
-        bundle: selectedBundle,
-        qty: currentBundle.qty,
-        amount: currentBundle.total,
-        fullName,
-        email,
-        phone,
-        country, // name
-        address1,
-        address2,
-        city,
-        stateRegion,
-        zip,
-        selectedPups: selectedPups.map((p) => p.name).join(', ')
-      };
+      const { submitToFormspree } = await import('../api/formspree');
+      const result = await submitToFormspree(FORMSPREE_ENDPOINT, payload);
 
-      await fetch(FORMSPREE_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify(payload)
-      });
-    } catch {
-      // ignore - still allow checkout
+      if (result.success) {
+        setSubmitSuccess(true);
+        // Brief delay to show success, then redirect to payment
+        setTimeout(() => {
+          routeToPayment();
+        }, 1000);
+      } else {
+        setSubmitError(result.error || 'Failed to submit. Please try again.');
+        setIsSubmitting(false);
+      }
+    } catch (error) {
+      console.error('Form submission error:', error);
+      setSubmitError('Network error. Please check your connection.');
+      setIsSubmitting(false);
     }
-
-    routeToPayment();
   };
 
   const headline = useMemo(() => {
@@ -881,10 +898,45 @@ export default function BringWaglyHome() {
                   </div>
                 </div>
 
+                {/* Error message */}
+                {submitError && (
+                  <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
+                    <svg className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div className="flex-1">
+                      <p className="text-sm font-semibold text-red-900">{submitError}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Success message */}
+                {submitSuccess && (
+                  <div className="bg-green-50 border border-green-200 rounded-xl p-4 flex items-center gap-3">
+                    <svg className="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <p className="text-sm font-semibold text-green-900">Order details saved! Redirecting to payment...</p>
+                  </div>
+                )}
+
                 <button
                   type="submit"
-                  className="w-full bg-[#FFD700] text-gray-900 py-4 rounded-full font-extrabold text-lg hover:brightness-95 transition-all hover:shadow-xl">
-                  Bring Wagly Home
+                  disabled={isSubmitting || submitSuccess}
+                  className="w-full bg-[#FFD700] text-gray-900 py-4 rounded-full font-extrabold text-lg hover:brightness-95 transition-all hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed">
+                  {isSubmitting ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      </svg>
+                      Processing...
+                    </span>
+                  ) : submitSuccess ? (
+                    'Redirecting...'
+                  ) : (
+                    'Bring Wagly Home'
+                  )}
                 </button>
 
                 <p className="text-xs text-gray-500 text-center">
