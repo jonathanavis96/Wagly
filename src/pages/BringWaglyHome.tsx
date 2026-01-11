@@ -289,11 +289,14 @@ export default function BringWaglyHome() {
     setSelectedPups((prev) => (prev.length > currentBundle.qty ? prev.slice(prev.length - currentBundle.qty) : prev));
   }, [currentBundle.qty]);
 
-  // initial stock: starts around 50–60% of total (green)
+  // initial stock: starts around 50–60% of total (green) - only if not loaded from session
   useEffect(() => {
-    const initial = randInt(Math.floor(STOCK_MAX * 0.5), Math.floor(STOCK_MAX * 0.6));
-    setStock(initial);
-  }, []);
+    // Only initialize if stock is 0 (meaning it wasn't loaded from sessionStorage)
+    if (stock === 0) {
+      const initial = randInt(Math.floor(STOCK_MAX * 0.5), Math.floor(STOCK_MAX * 0.6));
+      setStock(initial);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // country via IP (fallback to USA)
   useEffect(() => {
