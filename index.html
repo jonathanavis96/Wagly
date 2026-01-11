@@ -56,7 +56,35 @@
     <meta name="twitter:image" content="https://jonathanavis96.github.io/Wagly/og_image.png" />
     
     <!-- Dynamic OG/Twitter meta updater for PR previews -->
-    <script src="./og-meta-updater.js"></script>
+    <script>
+      // Update OG/Twitter meta tags dynamically for PR previews
+      (function() {
+        let pathname = window.location.pathname;
+        if (pathname.endsWith('index.html')) {
+          pathname = pathname.slice(0, -10);
+        }
+        if (!pathname.endsWith('/')) {
+          pathname = pathname + '/';
+        }
+        const baseUrl = window.location.origin + pathname;
+        const ogImageUrl = baseUrl + 'og_image.png';
+        const pageUrl = window.location.href.split('?')[0].split('#')[0];
+        
+        const ogImage = document.querySelector('meta[property="og:image"]');
+        if (ogImage) ogImage.setAttribute('content', ogImageUrl);
+        
+        const twitterImage = document.querySelector('meta[name="twitter:image"]');
+        if (twitterImage) twitterImage.setAttribute('content', ogImageUrl);
+        
+        const ogUrl = document.querySelector('meta[property="og:url"]');
+        if (ogUrl) ogUrl.setAttribute('content', pageUrl);
+        
+        const twitterUrl = document.querySelector('meta[name="twitter:url"]');
+        if (twitterUrl) twitterUrl.setAttribute('content', pageUrl);
+        
+        console.log('OG Meta Updater:', { pathname, baseUrl, ogImageUrl, pageUrl });
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
