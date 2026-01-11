@@ -859,13 +859,13 @@ export default function BringWaglyHome() {
                     </div>
                   </div>
 
-                  <p id=\"paymentSecure\" className=\"text-xs text-gray-500 mt-2\">
+                  <p id="paymentSecure" className="text-xs text-gray-500 mt-2">
                     Payments are completed on the secure Card2Crypto checkout page.
                   </p>
                 </div>
 
                 {/* CUSTOMER INFORMATION */}
-                <div className=\"scroll-mt-20\">
+                <div className="scroll-mt-20">
                   <div className="text-xs font-bold uppercase tracking-wide text-gray-700 mb-3 md:text-sm">Customer Information</div>
 
                   <div className="grid sm:grid-cols-2 gap-4">
