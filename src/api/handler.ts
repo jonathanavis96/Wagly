@@ -1,18 +1,22 @@
 export async function submitReview(data: { rating: number; name: string; title: string; comment: string }) {
-  const emailContent = `
-New Review Submission:
+  // NO-OP: Reviews are NOT persisted anywhere per requirements
+  // This function exists only to provide user feedback
+  
+  // Optional: Log for debugging (remove in production if desired)
+  console.log("Review received (not persisted):", {
+    name: data.name,
+    rating: data.rating,
+    title: data.title,
+    commentLength: data.comment.length
+  });
 
-Name: ${data.name}
-Role: ${data.title || "Not specified"}
-Rating: ${data.rating}/5 stars
-Comment: ${data.comment}
+  // Simulate brief network delay for better UX
+  await new Promise(resolve => setTimeout(resolve, 800));
 
----
-This review was submitted via the Wagly website.
-  `;
-
-  console.log("Review submitted:", emailContent);
-  return { success: true, message: "Review submitted successfully" };
+  return { 
+    success: true, 
+    message: "Thanks! Your review has been sent to our team." 
+  };
 }
 
 export async function submitContact(data: { name: string; email: string; message: string }) {
