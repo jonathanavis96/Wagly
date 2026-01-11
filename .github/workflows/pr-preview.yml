@@ -1,38 +1,60 @@
-# .github/workflows/pr-preview.yml
-name: Deploy PR Preview to GitHub Pages
+name: PR Preview (GitHub Pages)
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [opened, synchronize, reopened, closed]
 
 permissions:
   contents: write
+  pull-requests: read
 
 concurrency:
-  group: pages-pr-${{ github.event.number }}
+  group: "pr-preview-${{ github.event.number }}"
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  preview:
+    if: github.event.action != 'closed'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
 
-      - run: npm ci
+      - name: Install
+        run: npm ci
 
-      # IMPORTANT: build with a base that matches the subfolder you're deploying to
-      - name: Build with PR base path
+      # CRITICAL: override Vite base for the PR folder
+      - name: Build for PR folder base
         run: npm run build -- --base=/Wagly/pr-${{ github.event.number }}/
 
-      - name: Deploy to gh-pages (pr folder)
+      - name: Deploy PR preview to gh-pages/pr-<num> (without wiping main)
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
           folder: dist
           target-folder: pr-${{ github.event.number }}
           clean: false
+
+  cleanup:
+    if: github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout gh-pages
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+
+      - name: Remove preview folder
+        run: |
+          rm -rf pr-${{ github.event.number }}
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore: remove PR preview pr-${{ github.event.number }}" || echo "Nothing to commit"
+          git push
