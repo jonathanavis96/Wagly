@@ -146,16 +146,39 @@ function GooglePayIcon() {
 }
 
 const STORAGE_KEY = 'wagly_checkout_state_v1';
+const SESSION_KEY = 'wagly_session_state_v1';
 
 export default function BringWaglyHome() {
   const [showContactModal, setShowContactModal] = useState(false);
   const [selectedBundle, setSelectedBundle] = useState<BundleKey>('3');
 
-  // 10 min timer
-  const [timeLeft, setTimeLeft] = useState(600);
+  // 10 min timer - load from sessionStorage if available
+  const [timeLeft, setTimeLeft] = useState<number>(() => {
+    try {
+      const saved = sessionStorage.getItem(SESSION_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return parsed.timeLeft ?? 600;
+      }
+    } catch (err) {
+      console.warn('Failed to load session state:', err);
+    }
+    return 600;
+  });
 
-  // stock
-  const [stock, setStock] = useState<number>(0);
+  // stock - load from sessionStorage if available
+  const [stock, setStock] = useState<number>(() => {
+    try {
+      const saved = sessionStorage.getItem(SESSION_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return parsed.stock ?? 0;
+      }
+    } catch (err) {
+      console.warn('Failed to load session state:', err);
+    }
+    return 0;
+  });
   const [stockColor, setStockColor] = useState<string>('bg-green-600');
   const [flashStock, setFlashStock] = useState<boolean>(false);
 
@@ -246,6 +269,20 @@ export default function BringWaglyHome() {
       console.warn('Failed to save checkout state:', err);
     }
   }, [selectedBundle, selectedPups, fullName, email, phone, country, address1, address2, city, stateRegion, zip]);
+
+  // Persist timer and stock to sessionStorage (resets on page refresh)
+  useEffect(() => {
+    if (rehydratingRef.current) return; // Skip during initial rehydration
+    try {
+      const sessionState = {
+        timeLeft,
+        stock
+      };
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify(sessionState));
+    } catch (err) {
+      console.warn('Failed to save session state:', err);
+    }
+  }, [timeLeft, stock]);
 
   // keep selected pups aligned to bundle qty (trim oldest first to preserve most recent choices)
   useEffect(() => {
