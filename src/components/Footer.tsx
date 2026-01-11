@@ -153,18 +153,18 @@ export default function Footer({
   return (
     <>
       <footer
-        className={`bg-[#F9F6F0] text-gray-700 py-12 border-t border-black/5 ${className}`}
+        className={`bg-amber-50/30 text-gray-700 py-12 border-t border-gray-200 ${className}`}
       >
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-8 mb-8">
             <div>
-              <h3 className="font-extrabold text-gray-900 mb-4">Company</h3>
+              <h3 className="font-bold text-gray-900 mb-3 text-sm">Company</h3>
               <ul className="space-y-2 text-sm">
                 {showBackToHome ? (
                   <li>
                     <Link
                       to={backToHomeTo}
-                      className="hover:text-[#8A9A5B] transition font-semibold"
+                      className="hover:text-amber-700 transition font-semibold"
                     >
                       Back to Home
                     </Link>
@@ -176,7 +176,7 @@ export default function Footer({
                     <button
                       type="button"
                       onClick={onOpenContact}
-                      className="hover:text-[#8A9A5B] transition font-semibold"
+                      className="hover:text-amber-700 transition font-semibold"
                     >
                       Contact Us
                     </button>
@@ -187,7 +187,7 @@ export default function Footer({
                   <button
                     type="button"
                     onClick={() => setAboutOpen(true)}
-                    className="hover:text-[#8A9A5B] transition font-semibold"
+                    className="hover:text-amber-700 transition font-semibold"
                   >
                     About Us
                   </button>
@@ -196,13 +196,13 @@ export default function Footer({
             </div>
 
             <div>
-              <h3 className="font-extrabold text-gray-900 mb-4">Policies</h3>
+              <h3 className="font-bold text-gray-900 mb-3 text-sm">Policies</h3>
               <ul className="space-y-2 text-sm">
                 <li>
                   <button
                     type="button"
                     onClick={() => setOpenPolicy("terms")}
-                    className="hover:text-[#8A9A5B] transition font-semibold"
+                    className="hover:text-amber-700 transition font-semibold"
                   >
                     Terms & Conditions
                   </button>
@@ -211,7 +211,7 @@ export default function Footer({
                   <button
                     type="button"
                     onClick={() => setOpenPolicy("privacy")}
-                    className="hover:text-[#8A9A5B] transition font-semibold"
+                    className="hover:text-amber-700 transition font-semibold"
                   >
                     Privacy Policy
                   </button>
@@ -220,7 +220,7 @@ export default function Footer({
                   <button
                     type="button"
                     onClick={() => setOpenPolicy("refund")}
-                    className="hover:text-[#8A9A5B] transition font-semibold"
+                    className="hover:text-amber-700 transition font-semibold"
                   >
                     Refund Policy
                   </button>
@@ -229,7 +229,7 @@ export default function Footer({
                   <button
                     type="button"
                     onClick={() => setOpenPolicy("shipping")}
-                    className="hover:text-[#8A9A5B] transition font-semibold"
+                    className="hover:text-amber-700 transition font-semibold"
                   >
                     Shipping Policy
                   </button>
@@ -237,28 +237,19 @@ export default function Footer({
               </ul>
             </div>
 
-            <div>
-              <h3 className="font-extrabold text-gray-900 mb-4">Support</h3>
+            <div className="sm:col-span-2 md:col-span-1">
+              <h3 className="font-bold text-gray-900 mb-3 text-sm">Contact & Payment</h3>
               <ul className="space-y-2 text-sm">
                 <li className="text-gray-700">
-                  <span className="font-semibold text-gray-900">Phone:</span> +1
-                  (888) 555-0199
+                  <span className="font-semibold text-gray-900">Phone:</span> +1 (888) 555-0199
                 </li>
                 <li className="text-gray-700">
-                  <span className="font-semibold text-gray-900">Email:</span>{" "}
-                  myhearthsidepets@gmail.com
+                  <span className="font-semibold text-gray-900">Email:</span> myhearthsidepets@gmail.com
+                </li>
+                <li className="text-gray-700 pt-2">
+                  Secure payment via Card2Crypto. We never store card details.
                 </li>
               </ul>
-            </div>
-
-            <div>
-              <h3 className="font-extrabold text-gray-900 mb-4">
-                Secure Payment
-              </h3>
-              <p className="text-sm text-gray-700 leading-relaxed">
-                We process payments securely via Card2Crypto and never store
-                card details.
-              </p>
             </div>
           </div>
 

@@ -1,6 +1,8 @@
 // BringWaglyHome.tsx
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Clock, CreditCard, Headphones, Shield, Tag, Users } from 'lucide-react';
+import Header from '../components/Header';
+import TrustBar from '../components/TrustBar';
 import Footer from '../components/Footer';
 import { ContactModal } from '../components/ContactModal';
 
@@ -434,22 +436,14 @@ export default function BringWaglyHome() {
   }, [selectedBundle]);
 
   return (
-    <div className="min-h-screen bg-[#F9F6F0]">
-      <header className="sticky top-0 z-50 bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <a href={HOME_PATH} className="text-2xl font-serif font-bold text-gray-800 hover:text-[#8A9A5B] transition">
-            Wagly
-          </a>
-          <a href={HOME_PATH} className="text-gray-600 hover:text-[#8A9A5B] transition">
-            Back to Home
-          </a>
-        </div>
-      </header>
+    <div className="min-h-screen bg-gradient-to-b from-[#F9F6F0] to-white">
+      <Header />
+      <TrustBar />
 
-      <div className="max-w-6xl mx-auto px-4 py-10 overflow-x-hidden">
-        <h1 className="text-3xl md:text-4xl font-serif font-bold text-gray-900 text-center mb-10">{headline}</h1>
+      <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
+        <h1 className="mb-8 text-center font-serif text-3xl font-bold text-gray-900 md:text-4xl">{headline}</h1>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
           {/* LEFT */}
           <div>
             {/* Stock + countdown */}
@@ -467,7 +461,7 @@ export default function BringWaglyHome() {
 `}</style>
 
             <div
-              className={`bg-white rounded-2xl p-6 shadow-lg mb-6 border-2 transition ${
+              className={`bg-white rounded-2xl p-5 shadow-md border-2 transition ${
                 flashStock ? 'border-red-600 animate-[waglyStockFlash_0.9s_ease-in-out_infinite]' : 'border-transparent'
               }`}>
               <div className="flex items-center justify-between mb-2">
@@ -496,8 +490,8 @@ export default function BringWaglyHome() {
             </div>
 
             {/* Bundle tiles */}
-            <div className="bg-white rounded-2xl p-6 shadow-lg mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-5">Order Summary</h2>
+            <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-100 mb-6">
+              <h2 className="text-xl font-bold text-gray-900 mb-4 md:text-2xl">Choose Your Bundle</h2>
 
               <div className="space-y-4">
                 {Object.entries(bundles).map(([key, bundle]) => {
@@ -606,9 +600,14 @@ export default function BringWaglyHome() {
                                   type="button"
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    document
-                                      .getElementById('completeOrderHeader')
-                                      ?.scrollIntoView({ behavior: 'smooth' });
+                                    const element = document.getElementById('customerInformation');
+                                    if (element) {
+                                      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                      // Small delay to let smooth scroll start, then adjust for header
+                                      setTimeout(() => {
+                                        window.scrollBy({ top: -80, behavior: 'instant' });
+                                      }, 100);
+                                    }
                                   }}
                                   className="py-3 px-8 bg-[#FFD700] hover:bg-[#FFC400] text-gray-900 text-base sm:text-lg font-black rounded-xl shadow-xl transition-all transform hover:scale-105 animate-pulse border-2 border-white">
                                   YES! ADOPT MY PACK →
@@ -641,7 +640,7 @@ export default function BringWaglyHome() {
                                       : 'border-gray-200 hover:border-[#8A9A5B]'
                                   }`}>
                                   {count > 0 && (
-                                    <div className="absolute top-2 right-2 min-w-[28px] h-7 px-2 rounded-full bg-[#8A9A5B] text-white text-xs font-extrabold flex items-center justify-center">
+                                    <div className="absolute top-2 right-2 min-w-[28px] h-7 px-2 rounded-full bg-amber-600 text-white text-xs font-extrabold flex items-center justify-center">
                                       x{count}
                                     </div>
                                   )}
@@ -666,15 +665,15 @@ export default function BringWaglyHome() {
             </div>
 
             {/* Form */}
-            <div className="bg-white rounded-2xl p-6 shadow-lg">
-              <h2 id="completeOrderHeader" className="text-2xl font-bold text-gray-900 mb-5 scroll-mt-24">
+            <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-100">
+              <h2 id="completeOrderHeader" className="text-xl font-bold text-gray-900 mb-5 scroll-mt-24 md:text-2xl">
                 Complete Your Order
               </h2>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-7">
                 {/* PAYMENT METHODS */}
                 <div>
-                  <div className="text-sm font-extrabold text-gray-900 mb-2">PAYMENT METHODS</div>
+                  <div className="text-xs font-bold uppercase tracking-wide text-gray-700 mb-3 md:text-sm">Payment Methods</div>
 
                   <div className="grid sm:grid-cols-2 gap-3">
                     {/* Secure Checkout */}
@@ -784,10 +783,10 @@ export default function BringWaglyHome() {
                 </div>
 
                 {/* CUSTOMER INFORMATION */}
-                <div>
-                  <div className="text-sm font-extrabold text-gray-900 mb-2">CUSTOMER INFORMATION</div>
+                <div id="customerInformation" className="scroll-mt-20">
+                  <div className="text-xs font-bold uppercase tracking-wide text-gray-700 mb-3 md:text-sm">Customer Information</div>
 
-                  <div className="grid sm:grid-cols-2 gap-3">
+                  <div className="grid sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
                       <input
@@ -825,13 +824,12 @@ export default function BringWaglyHome() {
 
                 {/* DELIVERY ADDRESS */}
                 <div>
-                  <div className="text-sm font-extrabold text-gray-900 mb-2">DELIVERY ADDRESS</div>
+                  <div className="text-xs font-bold uppercase tracking-wide text-gray-700 mb-3 md:text-sm">Delivery Address</div>
 
-                  <div className="grid sm:grid-cols-2 gap-3">
+                  <div className="grid sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
                       <select
-                        id="customerInformation"
                         value={country}
                         onChange={(e) => setCountry(e.target.value)}
                         className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white focus:border-[#8A9A5B] focus:ring-2 focus:ring-[#8A9A5B]/20 outline-none transition">
@@ -948,7 +946,7 @@ export default function BringWaglyHome() {
 
           {/* RIGHT */}
           <div>
-            <div className="bg-white rounded-2xl p-6 shadow-lg sticky top-24">
+            <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-100 sticky top-24">
               <div className="border border-gray-200 rounded-2xl overflow-hidden mb-6">
                 <div className="px-5 py-4 flex items-center justify-between border-b border-gray-200">
                   <div className="text-sm font-semibold text-gray-600">Total Savings</div>

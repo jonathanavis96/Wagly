@@ -22,6 +22,8 @@ import {
 } from 'lucide-react';
 import { ReviewModal } from '../components/ReviewModal';
 import { ContactModal } from '../components/ContactModal';
+import Header from '../components/Header';
+import TrustBar from '../components/TrustBar';
 import Footer from '../components/Footer';
 
 interface ReviewItem {
@@ -91,6 +93,7 @@ export default function Home() {
   };
 
   const WAGLY_IMG = withBase('/wagly-nobackground-1.png');
+  const WAGLY_IMG_2 = withBase('/wagly-nobackground-2.png');
 
   // Updated review names to match your distribution:
   // 40% first-name only, 20% full surname, 20% first-letter surname, 20% anonymous
@@ -332,114 +335,122 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F9F6F0]">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="text-2xl font-serif font-bold text-gray-800">Wagly</div>
+    <div className="min-h-screen bg-gradient-to-b from-[#F9F6F0] to-white">
+      <Header />
 
-          <nav className="hidden md:flex items-center gap-8">
-            <a
-              href="#features"
-              onClick={(e) => scrollToSection(e, 'features')}
-              className="text-gray-600 hover:text-[#8A9A5B] transition">
-              Features
-            </a>
-            <a
-              href="#how-it-works"
-              onClick={(e) => scrollToSection(e, 'how-it-works')}
-              className="text-gray-600 hover:text-[#8A9A5B] transition">
-              How It Works
-            </a>
-            <a
-              href="#reviews"
-              onClick={(e) => scrollToSection(e, 'reviews')}
-              className="text-gray-600 hover:text-[#8A9A5B] transition">
-              Reviews
-            </a>
-            <a
-              href="#faq"
-              onClick={(e) => scrollToSection(e, 'faq')}
-              className="text-gray-600 hover:text-[#8A9A5B] transition">
-              FAQ
-            </a>
-            <button onClick={() => setShowContactModal(true)} className="text-gray-600 hover:text-[#8A9A5B] transition">
-              Contact
-            </button>
+      {/* Promo bar */}
+      <div className="bg-[#8A9A5B] text-white py-3 text-center font-medium">
+        <p className="text-sm md:text-base">🎁 Limited-Time Family Offer | Save Up to 72% Today | Free Shipping</p>
+      </div>
+
+      <TrustBar />
+
+      {/* Hero */}
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="grid items-center gap-12 lg:grid-cols-2">
+          {/* Left: Content */}
+          <div className="text-center lg:text-left">
+            <div className="mb-4 flex justify-center gap-1 lg:justify-start">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="h-5 w-5 fill-[#8A9A5B] text-[#8A9A5B]" />
+              ))}
+              <span className="ml-2 text-sm text-gray-600">4.7 (1,132 reviews)</span>
+            </div>
+
+            <h1 className="mb-6 font-serif text-4xl font-bold leading-tight text-gray-900 md:text-5xl lg:text-6xl">
+              Meet Wagly, the Puppy That Brings Family Joy
+            </h1>
+            <p className="mb-8 text-lg leading-relaxed text-gray-600 md:text-xl">
+              All the love of a puppy, without the stress. A cozy companion designed for screen-free play, sweet routines,
+              and real family moments.
+            </p>
 
             <Link
               to="/bring-wagly-home"
-              className="bg-[#8A9A5B] text-white px-6 py-2 rounded-full hover:bg-[#7a8a4b] transition font-semibold">
-              Bring Wagly Home
+              className="mb-6 inline-block rounded-full bg-[#8A9A5B] px-8 py-4 text-lg font-bold text-white shadow-lg transition-all hover:bg-[#7a8a4b] hover:shadow-xl">
+              Get Up to 72% Off
             </Link>
-          </nav>
+
+            <p className="mb-8 text-sm text-gray-500">Limited stock available at discounted bundles.</p>
+
+            <div className="flex flex-wrap justify-center gap-6 lg:justify-start">
+              <div className="flex items-center gap-2">
+                <Shield className="h-5 w-5 text-[#8A9A5B]" />
+                <span className="text-sm text-gray-700">30-Day Guarantee</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Heart className="h-5 w-5 text-[#8A9A5B]" />
+                <span className="text-sm text-gray-700">Family-Approved</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-[#8A9A5B]" />
+                <span className="text-sm text-gray-700">Allergy-Friendly</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right: Product Image */}
+          <div className="flex justify-center">
+            <div className="relative">
+              <div className="absolute -inset-4 rounded-full bg-gradient-to-br from-[#F9F6F0] to-[#F9F6F0]/50 opacity-50 blur-2xl"></div>
+              <img
+                src={WAGLY_IMG}
+                alt="Wagly puppy companion"
+                className="relative h-80 w-80 object-contain drop-shadow-2xl md:h-96 md:w-96"
+              />
+            </div>
+          </div>
         </div>
-      </header>
+      </section>
 
-      {/* Promo bar */}
-      <div className="bg-[#8A9A5B] text-white py-3 text-center">
-        <p className="text-sm md:text-base">Limited-Time Family Offer | Save Up to 72% Today</p>
-      </div>
-
-      {/* Hero */}
-      <section className="max-w-7xl mx-auto px-6 py-24">
-        <div className="text-center max-w-4xl mx-auto">
-          <div className="flex justify-center gap-1 mb-4">
-            {[...Array(5)].map((_, i) => (
-              <Star key={i} className="w-5 h-5 fill-[#8A9A5B] text-[#8A9A5B]" />
-            ))}
-            <span className="text-gray-600 ml-2">4.7 (1,132 reviews)</span>
-          </div>
-
-          <h1 className="text-5xl md:text-6xl font-serif font-bold text-gray-900 mb-6 leading-tight">
-            Meet Wagly, the Puppy That Brings Family Joy
-          </h1>
-          <p className="text-xl text-gray-600 mb-8 leading-relaxed" style={{ lineHeight: '1.6' }}>
-            All the love of a puppy, without the stress. A cozy companion designed for screen-free play, sweet routines,
-            and real family moments.
-          </p>
-
-          <div className="flex flex-wrap justify-center gap-8 mt-12">
-            <div className="flex items-center gap-2">
-              <Shield className="w-6 h-6 text-[#8A9A5B]" />
-              <span className="text-gray-700">30-Day Happiness Guarantee</span>
+      {/* Featured Testimonials */}
+      <section className="bg-white py-8 border-y border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h3 className="text-center text-sm font-bold text-gray-500 uppercase tracking-wide mb-6">What Families Say</h3>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="bg-[#F9F6F0] rounded-xl p-5">
+              <div className="flex gap-1 mb-2">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="h-4 w-4 fill-[#8A9A5B] text-[#8A9A5B]" />
+                ))}
+              </div>
+              <p className="text-sm text-gray-700 mb-3">"My grandson fell in love straight away! Best gift ever."</p>
+              <p className="text-xs font-semibold text-gray-600">— Mary, Grandmother</p>
             </div>
-            <div className="flex items-center gap-2">
-              <Heart className="w-6 h-6 text-[#8A9A5B]" />
-              <span className="text-gray-700">Family-Approved Gift</span>
+            <div className="bg-[#F9F6F0] rounded-xl p-5">
+              <div className="flex gap-1 mb-2">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="h-4 w-4 fill-[#8A9A5B] text-[#8A9A5B]" />
+                ))}
+              </div>
+              <p className="text-sm text-gray-700 mb-3">"Keeps the kids busy for ages. Such a good gift idea."</p>
+              <p className="text-xs font-semibold text-gray-600">— Helen Rosburg, Parent</p>
             </div>
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-6 h-6 text-[#8A9A5B]" />
-              <span className="text-gray-700">Allergy-Friendly</span>
+            <div className="bg-[#F9F6F0] rounded-xl p-5 sm:col-span-2 lg:col-span-1">
+              <div className="flex gap-1 mb-2">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="h-4 w-4 fill-[#8A9A5B] text-[#8A9A5B]" />
+                ))}
+              </div>
+              <p className="text-sm text-gray-700 mb-3">"So interactive! Every time it moves my toddler laughs."</p>
+              <p className="text-xs font-semibold text-gray-600">— Susan Chan, Parent</p>
             </div>
           </div>
-
-          <div className="mt-16 bg-white rounded-3xl shadow-xl p-12 aspect-video flex items-center justify-center">
-            <p className="text-gray-400 text-lg">Interactive Wagly Product Display</p>
-          </div>
-
-          <Link
-            to="/bring-wagly-home"
-            className="inline-block mt-12 bg-[#8A9A5B] text-white px-8 py-4 rounded-full hover:bg-[#7a8a4b] transition font-bold text-lg">
-            Get Up to 72% Off
-          </Link>
-
-          <p className="text-sm text-gray-500 mt-3">Limited stock available at the discounted bundles.</p>
         </div>
       </section>
 
       {/* Your Best Wagly Friend */}
-      <section className="bg-[#F9F6F0] py-20">
+      <section className="bg-[#F9F6F0]/30 py-16 sm:py-20">
         <div className="max-w-7xl mx-auto px-6 text-center">
-          <h2 className="text-4xl font-serif font-bold text-gray-900 mb-4">Your Best Wagly Friend</h2>
+          <h2 className="text-3xl font-serif font-bold text-gray-900 mb-4 md:text-4xl">Your Best Wagly Friend</h2>
           <div className="w-20 h-1 bg-[#8A9A5B] mx-auto rounded-full mb-8" />
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto" style={{ lineHeight: '1.6' }}>
+          <p className="text-base text-gray-600 max-w-3xl mx-auto leading-relaxed md:text-lg">
             Handcrafted to bring joy to every family, with sweet details kids love and grown-ups appreciate.
           </p>
 
-          <div className="mt-14 grid md:grid-cols-3 gap-10 items-center">
+          <div className="mt-12 grid md:grid-cols-3 gap-10 items-center">
             {/* Left list */}
-            <div className="space-y-6 text-left">
+            <div className="space-y-5 text-left">
               {[
                 { icon: Check, label: 'Ready to play instantly' },
                 { icon: Sparkles, label: 'Playful, responsive behavior' },
@@ -447,10 +458,10 @@ export default function Home() {
                 { icon: HandHeart, label: 'Touch-responsive reactions' }
               ].map((item, idx) => (
                 <div key={idx} className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center flex-shrink-0">
                     <item.icon className="w-6 h-6 text-[#8A9A5B]" />
                   </div>
-                  <div className="text-gray-800 font-semibold">{item.label}</div>
+                  <div className="text-gray-800 font-semibold text-sm md:text-base">{item.label}</div>
                 </div>
               ))}
             </div>
@@ -458,15 +469,15 @@ export default function Home() {
             {/* Center image */}
             <div className="flex justify-center">
               <img
-                src={WAGLY_IMG}
+                src={WAGLY_IMG_2}
                 alt="Wagly puppy"
-                className="w-56 h-56 md:w-60 md:h-60 object-contain drop-shadow-sm"
+                className="w-56 h-56 md:w-64 md:h-64 object-contain drop-shadow-lg"
                 loading="lazy"
               />
             </div>
 
             {/* Right list */}
-            <div className="space-y-6 text-left md:justify-self-end">
+            <div className="space-y-5 text-left md:justify-self-end">
               {[
                 { icon: Sparkles, label: 'Hand-finished details' },
                 { icon: Check, label: 'Soft and durable' },
@@ -474,10 +485,10 @@ export default function Home() {
                 { icon: Shield, label: 'Allergy-friendly for families' }
               ].map((item, idx) => (
                 <div key={idx} className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center flex-shrink-0">
                     <item.icon className="w-6 h-6 text-[#8A9A5B]" />
                   </div>
-                  <div className="text-gray-800 font-semibold">{item.label}</div>
+                  <div className="text-gray-800 font-semibold text-sm md:text-base">{item.label}</div>
                 </div>
               ))}
             </div>
@@ -486,46 +497,46 @@ export default function Home() {
       </section>
 
       {/* Gift */}
-      <section className="bg-white py-24">
-        <div className="max-w-5xl mx-auto px-6 text-center">
-          <h2 className="text-4xl font-serif font-bold text-gray-900 mb-6">A Gift They’ll Remember</h2>
-          <p className="text-xl text-gray-600 leading-relaxed" style={{ lineHeight: '1.6' }}>
-            Watch their face light up when Wagly walks, reacts, and “keeps them company.” It creates real moments, not
+      <section className="bg-white py-16 sm:py-20">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+          <h2 className="text-3xl font-serif font-bold text-gray-900 mb-6 md:text-4xl">A Gift They'll Remember</h2>
+          <p className="text-lg text-gray-600 leading-relaxed md:text-xl">
+            Watch their face light up when Wagly walks, reacts, and "keeps them company." It creates real moments, not
             more screen time.
           </p>
         </div>
       </section>
 
       {/* Shared moments / Screen-free / Healthy routines */}
-      <section className="max-w-7xl mx-auto px-6 py-24">
-        <div className="grid md:grid-cols-3 gap-12">
-          <div className="bg-white rounded-2xl p-10 shadow-lg">
+      <section className="max-w-7xl mx-auto px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+        <div className="grid md:grid-cols-3 gap-8">
+          <div className="bg-white rounded-2xl p-8 shadow-md border border-gray-100">
             <div className="flex items-center gap-3 mb-4">
-              <HeartHandshake className="w-7 h-7 text-[#8A9A5B]" />
-              <h3 className="text-2xl font-serif font-bold text-gray-900">Shared Moments</h3>
+              <HeartHandshake className="w-7 h-7 text-[#8A9A5B] flex-shrink-0" />
+              <h3 className="text-xl font-serif font-bold text-gray-900">Shared Moments</h3>
             </div>
-            <p className="text-gray-600 leading-relaxed" style={{ lineHeight: '1.6' }}>
+            <p className="text-gray-600 leading-relaxed text-sm md:text-base">
               The kind of toy that brings everyone closer. Little chats, gentle cuddles, and sweet play you will want to
               take photos of.
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl p-10 shadow-lg">
+          <div className="bg-white rounded-2xl p-8 shadow-md border border-gray-100">
             <div className="flex items-center gap-3 mb-4">
-              <Sparkles className="w-7 h-7 text-[#8A9A5B]" />
-              <h3 className="text-2xl font-serif font-bold text-gray-900">Screen-Free Play</h3>
+              <Sparkles className="w-7 h-7 text-[#8A9A5B] flex-shrink-0" />
+              <h3 className="text-xl font-serif font-bold text-gray-900">Screen-Free Play</h3>
             </div>
-            <p className="text-gray-600 leading-relaxed" style={{ lineHeight: '1.6' }}>
+            <p className="text-gray-600 leading-relaxed text-sm md:text-base">
               Keeps little hands busy with imaginative play, without another show, app, or noisy plastic toy.
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl p-10 shadow-lg">
+          <div className="bg-white rounded-2xl p-8 shadow-md border border-gray-100">
             <div className="flex items-center gap-3 mb-4">
-              <HandHeart className="w-7 h-7 text-[#8A9A5B]" />
-              <h3 className="text-2xl font-serif font-bold text-gray-900">Building Healthy Routines</h3>
+              <HandHeart className="w-7 h-7 text-[#8A9A5B] flex-shrink-0" />
+              <h3 className="text-xl font-serif font-bold text-gray-900">Building Healthy Routines</h3>
             </div>
-            <p className="text-gray-600 leading-relaxed" style={{ lineHeight: '1.6' }}>
+            <p className="text-gray-600 leading-relaxed text-sm md:text-base">
               Gentle bedtime cuddles, encouraging kindness, and empathy. Wagly helps children develop nurturing habits
               naturally.
             </p>
@@ -534,7 +545,7 @@ export default function Home() {
       </section>
 
       {/* A Futuristic Puppy */}
-      <section id="features" className="bg-white py-24">
+      <section id="features" className="bg-white py-16 sm:py-20">
         <div className="max-w-7xl mx-auto px-6">
           <h2 className="text-4xl font-serif font-bold text-gray-900 text-center mb-3">
             A Futuristic Puppy That Adores You
@@ -585,7 +596,7 @@ export default function Home() {
       </section>
 
       {/* Steps */}
-      <section id="how-it-works" className="bg-white py-24">
+      <section id="how-it-works" className="bg-white py-16 sm:py-20">
         <div className="max-w-7xl mx-auto px-6">
           <h2 className="text-4xl font-serif font-bold text-gray-900 text-center mb-3">
             Bring Wagly to Life in 3 Simple Steps
@@ -648,7 +659,7 @@ export default function Home() {
       </section>
 
       {/* Why Wagly */}
-      <section className="bg-[#F9F6F0] py-24">
+      <section className="bg-[#F9F6F0]/30 py-16 sm:py-20">
         <div className="max-w-7xl mx-auto px-6">
           <h2 className="text-4xl font-serif font-bold text-gray-900 text-center mb-3">Why Wagly?</h2>
           <div className="w-20 h-1 bg-[#8A9A5B] mx-auto rounded-full mb-10" />
@@ -785,7 +796,7 @@ export default function Home() {
       </section>
 
       {/* Reviews */}
-      <section id="reviews" className="max-w-7xl mx-auto px-6 py-24">
+      <section id="reviews" className="max-w-7xl mx-auto px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
         <div className="flex items-center justify-between mb-10">
           <h2 className="text-4xl font-serif font-bold text-gray-900">What Families Are Saying</h2>
           <button
@@ -912,7 +923,7 @@ export default function Home() {
       </section>
 
       {/* FAQ */}
-      <section id="faq" className="bg-white py-24">
+      <section id="faq" className="bg-white py-16 sm:py-20">
         <div className="max-w-4xl mx-auto px-6">
           <h2 className="text-4xl font-serif font-bold text-gray-900 text-center mb-4">Frequently Asked Questions</h2>
           <div className="w-20 h-1 bg-[#8A9A5B] mx-auto rounded-full mb-14" />
@@ -956,7 +967,7 @@ export default function Home() {
       </section>
 
       {/* Guarantee */}
-      <section className="bg-[#8A9A5B] text-white py-24">
+      <section className="bg-[#8A9A5B] text-white py-16 sm:py-20">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <Shield className="w-16 h-16 mx-auto mb-6" />
           <h2 className="text-3xl font-serif font-bold mb-6">The Grandparent Promise</h2>
