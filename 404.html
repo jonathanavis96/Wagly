@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Redirecting…</title>
+    <script>
+      // SPA redirect for GitHub Pages (keeps clean URLs)
+      // segmentCount = 1 because your repo name is /Wagly
+      var segmentCount = 1;
+
+      var l = window.location;
+      var origin = l.protocol + "//" + l.hostname + (l.port ? ":" + l.port : "");
+
+      // Turn /Wagly/bring-wagly-home into /Wagly/?/bring-wagly-home
+      var pathParts = l.pathname.split("/").slice(0, 1 + segmentCount).join("/");
+      var restParts = l.pathname.split("/").slice(1 + segmentCount).join("/");
+
+      l.replace(
+        origin +
+          pathParts +
+          "/?/" +
+          restParts +
+          (l.search ? "&" + l.search.slice(1) : "") +
+          l.hash
+      );
+    </script>
+  </head>
+  <body></body>
+</html>
