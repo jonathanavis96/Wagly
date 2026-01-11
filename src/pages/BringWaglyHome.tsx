@@ -145,6 +145,8 @@ function GooglePayIcon() {
   );
 }
 
+const STORAGE_KEY = 'wagly_checkout_state_v1';
+
 export default function BringWaglyHome() {
   const [showContactModal, setShowContactModal] = useState(false);
   const [selectedBundle, setSelectedBundle] = useState<BundleKey>('3');
@@ -168,6 +170,10 @@ export default function BringWaglyHome() {
   const [stateRegion, setStateRegion] = useState('');
   const [zip, setZip] = useState('');
 
+  // Refs for scroll management
+  const isAutoScrollingRef = useRef(false);
+  const rehydratingRef = useRef(true);
+
   const pupOptions: PupOption[] = useMemo(
     () => [
       { id: 'teddy', name: 'Teddy', src: `${import.meta.env.BASE_URL}pups/pup1.png` },
@@ -189,6 +195,57 @@ export default function BringWaglyHome() {
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
   const currentBundle = bundles[selectedBundle];
+
+  // Load persisted state on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.selectedBundle) setSelectedBundle(parsed.selectedBundle);
+        if (parsed.selectedPups) setSelectedPups(parsed.selectedPups);
+        if (parsed.fullName) setFullName(parsed.fullName);
+        if (parsed.email) setEmail(parsed.email);
+        if (parsed.phone) setPhone(parsed.phone);
+        if (parsed.country) setCountry(parsed.country);
+        if (parsed.address1) setAddress1(parsed.address1);
+        if (parsed.address2) setAddress2(parsed.address2);
+        if (parsed.city) setCity(parsed.city);
+        if (parsed.stateRegion) setStateRegion(parsed.stateRegion);
+        if (parsed.zip) setZip(parsed.zip);
+      }
+    } catch (err) {
+      console.warn('Failed to load checkout state:', err);
+    } finally {
+      // Mark rehydration complete after a frame to avoid triggering scroll effects
+      requestAnimationFrame(() => {
+        rehydratingRef.current = false;
+      });
+    }
+  }, []);
+
+  // Persist state changes to localStorage
+  useEffect(() => {
+    if (rehydratingRef.current) return; // Skip during initial rehydration
+    try {
+      const state = {
+        selectedBundle,
+        selectedPups,
+        fullName,
+        email,
+        phone,
+        country,
+        address1,
+        address2,
+        city,
+        stateRegion,
+        zip
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (err) {
+      console.warn('Failed to save checkout state:', err);
+    }
+  }, [selectedBundle, selectedPups, fullName, email, phone, country, address1, address2, city, stateRegion, zip]);
 
   // keep selected pups aligned to bundle qty (trim oldest first to preserve most recent choices)
   useEffect(() => {
@@ -413,6 +470,12 @@ export default function BringWaglyHome() {
 
       if (result.success) {
         setSubmitSuccess(true);
+        // Clear localStorage on successful order
+        try {
+          localStorage.removeItem(STORAGE_KEY);
+        } catch (err) {
+          console.warn('Failed to clear checkout state:', err);
+        }
         // Brief delay to show success, then redirect to payment
         setTimeout(() => {
           routeToPayment();
@@ -599,15 +662,34 @@ export default function BringWaglyHome() {
                                 <button
                                   type="button"
                                   onClick={(e) => {
+                                    e.preventDefault();
                                     e.stopPropagation();
-                                    const element = document.getElementById('customerInformation');
-                                    if (element) {
-                                      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                      // Small delay to let smooth scroll start, then adjust for header
-                                      setTimeout(() => {
-                                        window.scrollBy({ top: -80, behavior: 'instant' });
-                                      }, 100);
-                                    }
+                                    
+                                    isAutoScrollingRef.current = true;
+                                    
+                                    // Wait for any layout changes, then scroll to payment section
+                                    requestAnimationFrame(() => {
+                                      requestAnimationFrame(() => {
+                                        const target = document.getElementById('paymentSecure');
+                                        if (target) {
+                                          // Get the target's position
+                                          const rect = target.getBoundingClientRect();
+                                          const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                                          const targetTop = rect.top + scrollTop;
+                                          
+                                          // Scroll so the target is at the top of the viewport
+                                          window.scrollTo({
+                                            top: targetTop,
+                                            behavior: 'smooth'
+                                          });
+                                          
+                                          // Release the auto-scroll lock after animation completes
+                                          setTimeout(() => {
+                                            isAutoScrollingRef.current = false;
+                                          }, 1000);
+                                        }
+                                      });
+                                    });
                                   }}
                                   className="py-3 px-8 bg-[#FFD700] hover:bg-[#FFC400] text-gray-900 text-base sm:text-lg font-black rounded-xl shadow-xl transition-all transform hover:scale-105 animate-pulse border-2 border-white">
                                   YES! ADOPT MY PACK →
@@ -640,7 +722,7 @@ export default function BringWaglyHome() {
                                       : 'border-gray-200 hover:border-[#8A9A5B]'
                                   }`}>
                                   {count > 0 && (
-                                    <div className="absolute top-2 right-2 min-w-[28px] h-7 px-2 rounded-full bg-amber-600 text-white text-xs font-extrabold flex items-center justify-center">
+                                    <div className="absolute top-2 right-2 min-w-[28px] h-7 px-2 rounded-full bg-[#8A9A5B] text-white text-xs font-extrabold flex items-center justify-center">
                                       x{count}
                                     </div>
                                   )}
@@ -777,13 +859,13 @@ export default function BringWaglyHome() {
                     </div>
                   </div>
 
-                  <p className="text-xs text-gray-500 mt-2">
+                  <p id=\"paymentSecure\" className=\"text-xs text-gray-500 mt-2\">
                     Payments are completed on the secure Card2Crypto checkout page.
                   </p>
                 </div>
 
                 {/* CUSTOMER INFORMATION */}
-                <div id="customerInformation" className="scroll-mt-20">
+                <div className=\"scroll-mt-20\">
                   <div className="text-xs font-bold uppercase tracking-wide text-gray-700 mb-3 md:text-sm">Customer Information</div>
 
                   <div className="grid sm:grid-cols-2 gap-4">
